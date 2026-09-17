@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   LSSD Deputy Pocketbook — design tokens
+
+   Direction: tactical / MDT terminal. Near-black ground, thin high-contrast
+   rules instead of soft cards, monospace for anything a deputy reads off a
+   screen mid-shift (codes, callsigns, plates, badge numbers).
+
+   ⚠ TOKEN NAMES ARE LOAD-BEARING
+   `lib/bbcode.ts` emits inline styles that reference `var(--surface-2)` and
+   `var(--border)` as literal strings, for the report preview. Those two names
+   must not be renamed — the Tailwind mapping in `@theme inline` is additive,
+   layered on top of the raw tokens rather than replacing them.
+   ========================================================================= */
+
+:root {
+  /* Dark is the default — this is a night-shift tool. */
+  color-scheme: dark;
+
+  --bg: #0a0b0a;
+  --bg-2: #0e100e;
+  --surface: #131613;
+  --surface-2: #191d19;
+  --border: #262b26;
+  --border-soft: #1c211c;
+
+  --text: #dde3dd;
+  --text-dim: #8d968d;
+  /* Green-tinted to match the accent hue. Every token is checked against AA
+     (4.5:1) on --bg, --surface and --surface-2 — this one is the tightest at
+     4.68:1, so darken it only against measurement, never by eye. */
+  --text-faint: #808881;
+
+  /* LSSD green, kept as the identity accent. */
+  --accent: #7da876;
+  --accent-soft: rgba(125, 168, 118, 0.13);
+  /* Amber for priority / caution, red for danger and illegal items. */
+  --accent-2: #d9a441;
+  --accent-2-soft: rgba(217, 164, 65, 0.13);
+  --danger: #e5484d;
+  --danger-soft: rgba(229, 72, 77, 0.13);
+
+  --radius: 4px;
+  --radius-sm: 3px;
+
+  --font: var(--font-archivo), system-ui, sans-serif;
+  --mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+[data-theme="light"] {
+  /* Keeps native scrollbars, date pickers and form controls in step. */
+  color-scheme: light;
+
+  --bg: #eceeec;
+  --bg-2: #e4e7e4;
+  --surface: #f7f8f7;
+  --surface-2: #eef0ee;
+  --border: #c6ccc6;
+  --border-soft: #d6dbd6;
+
+  --text: #141714;
+  --text-dim: #4c544c;
+  --text-faint: #666c67;
+
+  --accent: #3f6b39;
+  --accent-soft: rgba(63, 107, 57, 0.11);
+  --accent-2: #8a6314;
+  --accent-2-soft: rgba(138, 99, 20, 0.11);
+  --danger: #b3242a;
+  --danger-soft: rgba(179, 36, 42, 0.1);
+}
+
+/* Map the raw tokens into Tailwind's namespace.
+   `inline` is required: plain @theme would resolve var() at :root and the
+   [data-theme="light"] overrides would never reach the utilities. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-text-faint: var(--text-faint);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-soft: var(--accent-2-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --radius-DEFAULT: var(--radius);
+  --radius-sm: var(--radius-sm);
+
+  --font-sans: var(--font);
+  --font-mono: var(--mono);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Clears the sticky mobile topbar when jumping to a #anchor. */
+    scroll-padding-top: 68px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* A faint scanline grid — the MDT texture. Kept very low contrast so it
+     reads as material rather than decoration. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 44px 44px;
+    opacity: 0.4;
+    mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, #000 0%, transparent 75%);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border: 2px solid var(--bg);
+    border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+  }
+}
+
+/* ============================================================================
+   Report preview — the one place generated HTML is injected.
+   These styles style the output of `bbToHtml`, whose inline styles already
+   reference the raw tokens above.
+   ========================================================================= */
+.report-preview {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  word-break: break-word;
+}
+.report-preview img {
+  max-width: 100%;
+}
+.report-preview details {
+  margin: 4px 0;
+}
+.report-preview summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================================
+   Motion — one orchestrated page load, and a hard stop for reduced motion.
+   ========================================================================= */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-reveal {
+  animation: reveal 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .section-reveal {
+    animation: none;
+  }
+}
