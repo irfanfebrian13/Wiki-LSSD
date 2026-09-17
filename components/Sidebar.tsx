@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import type { NavGroup } from "@/lib/types";
 
@@ -14,6 +14,35 @@ const QUICK_JUMPS = [
   { label: "Weapons Class", target: "senjata-illegal" },
   { label: "Patrol Generator", target: "patrol-report" },
 ];
+
+/**
+ * Reveal a nav link inside the sidebar's own scroll box.
+ *
+ * Deliberately not `scrollIntoView`: that walks every scrollable ancestor, so
+ * revealing the link would also scroll the page and fight the section jump the
+ * click just started. Touching only the container's scrollTop keeps the two
+ * movements independent. When the link is already comfortably in view this is
+ * a no-op, so it never nudges the list while the deputy is reading it.
+ */
+function revealInSidebar(el: HTMLElement) {
+  let container: HTMLElement | null = el.parentElement;
+  while (container && container !== document.body) {
+    const { overflowY } = getComputedStyle(container);
+    if (overflowY === "auto" || overflowY === "scroll") break;
+    container = container.parentElement;
+  }
+  if (!container || container === document.body) return;
+
+  const pad = 12;
+  const elRect = el.getBoundingClientRect();
+  const boxRect = container.getBoundingClientRect();
+
+  if (elRect.top < boxRect.top + pad) {
+    container.scrollTop -= boxRect.top + pad - elRect.top;
+  } else if (elRect.bottom > boxRect.bottom - pad) {
+    container.scrollTop += elRect.bottom - (boxRect.bottom - pad);
+  }
+}
 
 interface SidebarProps {
   groups: NavGroup[];
@@ -36,6 +65,10 @@ export function Sidebar({
   searchInputRef,
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  /* `tick` makes every click a distinct value, so re-clicking the same chip
+     still re-runs the reveal effect. */
+  const [reveal, setReveal] = useState<{ id: string; tick: number } | null>(null);
+  const navRef = useRef<HTMLElement>(null);
   const baseId = useId();
 
   const toggleGroup = (name: string) => {
@@ -46,6 +79,34 @@ export function Sidebar({
       return next;
     });
   };
+
+  /** Navigate, expanding the destination's group so its link exists to reveal. */
+  const navigateTo = (id: string) => {
+    onNavigate(id);
+
+    const group = groups.find((g) => g.items.some((s) => s.id === id));
+    if (group) {
+      setCollapsed((prev) => {
+        if (!prev.has(group.name)) return prev;
+        const next = new Set(prev);
+        next.delete(group.name);
+        return next;
+      });
+    }
+
+    setReveal((prev) => ({ id, tick: (prev?.tick ?? 0) + 1 }));
+  };
+
+  /* Runs after the commit, so the link is in the DOM (and its group expanded)
+     by the time we look for it. This only writes to the DOM — the group
+     expansion above is a user-event update, never a setState from in here. */
+  useEffect(() => {
+    if (!reveal) return;
+    const el = navRef.current?.querySelector<HTMLElement>(
+      `[data-nav-id="${reveal.id}"]`,
+    );
+    if (el) revealInSidebar(el);
+  }, [reveal]);
 
   const isSearching = query.trim().length > 0;
 
@@ -95,7 +156,7 @@ export function Sidebar({
             <a
               key={jump.label}
               href={`#${jump.target}`}
-              onClick={() => onNavigate(jump.target)}
+              onClick={() => navigateTo(jump.target)}
               className="border border-border bg-surface px-2.5 py-1 font-mono text-[11px] font-medium text-text-dim transition-colors hover:border-accent hover:text-accent"
             >
               {jump.label}
@@ -104,7 +165,7 @@ export function Sidebar({
         </div>
       ) : null}
 
-      <nav aria-label="Bagian pocketbook" className="flex-1">
+      <nav ref={navRef} aria-label="Bagian pocketbook" className="flex-1">
         {groups.map((group) => {
           const items = group.items.filter((s) => visibleIds.has(s.id));
           if (items.length === 0) return null;
@@ -134,8 +195,9 @@ export function Sidebar({
                     <li key={section.id}>
                       <a
                         href={`#${section.id}`}
+                        data-nav-id={section.id}
                         aria-current={active ? "true" : undefined}
-                        onClick={() => onNavigate(section.id)}
+                        onClick={() => navigateTo(section.id)}
                         className={`flex items-center gap-2.5 border-l-2 px-2.5 py-1.5 text-[13px] transition-colors ${
                           active
                             ? "border-l-accent bg-accent-soft font-medium text-text"
