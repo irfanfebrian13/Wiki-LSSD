@@ -4,13 +4,15 @@ import { useId, useState } from "react";
 
 import type { NavGroup } from "@/lib/types";
 
-/** Sections worth one-tap access — the ones deputies reach for mid-shift. */
+/** Sections worth one-tap access — the ones deputies reach for mid-shift.
+    `target` is the section to scroll to; `label` identifies the chip. They are
+    separate fields because two chips may point at the same section. */
 const QUICK_JUMPS = [
-  { id: "ten-codes", label: "Ten Codes" },
-  { id: "bls-miranda", label: "Miranda" },
-  { id: "penal-robbery", label: "Robbery" },
-  { id: "priority-threat", label: "Priority" },
-  { id: "impound", label: "Impound" },
+  { label: "Ten Codes", target: "ten-codes" },
+  { label: "Radio", target: "radio-basics" },
+  { label: "Penal Code", target: "penal-robbery" },
+  { label: "Weapons Class", target: "senjata-illegal" },
+  { label: "Patrol Generator", target: "patrol-report" },
 ];
 
 interface SidebarProps {
@@ -90,14 +92,14 @@ export function Sidebar({
       {!isSearching ? (
         <div className="mb-3.5 flex flex-wrap gap-1.5 border-b border-border-soft pb-3.5">
           {QUICK_JUMPS.map((jump) => (
-            <button
-              key={jump.id}
-              type="button"
-              onClick={() => onNavigate(jump.id)}
+            <a
+              key={jump.label}
+              href={`#${jump.target}`}
+              onClick={() => onNavigate(jump.target)}
               className="border border-border bg-surface px-2.5 py-1 font-mono text-[11px] font-medium text-text-dim transition-colors hover:border-accent hover:text-accent"
             >
               {jump.label}
-            </button>
+            </a>
           ))}
         </div>
       ) : null}
