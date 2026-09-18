@@ -13,7 +13,8 @@ interface SectionViewProps {
 }
 
 /**
- * One section: header plus its blocks.
+ * One section: the reference's page header (category chip, large title) plus
+ * its blocks.
  *
  * Memoised because search filtering re-renders the shell on every keystroke,
  * and only the sections whose visibility actually changed need to re-render —
@@ -32,27 +33,20 @@ export const SectionView = memo(function SectionView({
       className="section-reveal scroll-mt-[68px]"
       style={{ animationDelay: `${Math.min(index * 0.03, 0.36)}s` }}
     >
-      <div className="mb-5 flex items-center gap-3.5 border-b border-border pb-3.5">
-        <span
-          aria-hidden
-          className="grid h-9 w-9 shrink-0 place-items-center rounded border border-border bg-surface text-[15px] text-accent"
-        >
-          {section.icon}
+      <header className="mb-6">
+        <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
+          <span aria-hidden>{section.icon}</span>
+          {section.group}
         </span>
-        <div className="min-w-0">
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
-            {section.group}
-          </div>
-          <h2
-            id={`${section.id}-heading`}
-            className="text-[21px] font-bold leading-tight tracking-tight text-text"
-          >
-            {section.title}
-          </h2>
-        </div>
-      </div>
+        <h2
+          id={`${section.id}-heading`}
+          className="font-display text-[28px] font-bold leading-[1.15] tracking-[-0.01em] text-text"
+        >
+          {section.title}
+        </h2>
+      </header>
 
-      <div className="grid gap-4">
+      <div className="grid gap-[18px]">
         {section.blocks.map((block, i) => (
           <BlockRenderer key={i} block={block} />
         ))}

@@ -1,19 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+/* Space Grotesk for display, Inter for body/UI, JetBrains Mono for anything a
+   deputy reads off a screen mid-shift (codes, callsigns, plates, generated
+   output) — the reference's type system. */
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
@@ -23,7 +33,7 @@ export const metadata: Metadata = {
     "Los Santos Sheriff Department — Deputy Pocketbook. Ten codes, procedures, penal code and patrol report generator.",
   applicationName: "LSSD Pocketbook",
   icons: { icon: "/sheriff.png" },
-  other: { "theme-color": "#0a0b0a" },
+  other: { "theme-color": "#0c0e12" },
 };
 
 export const viewport: Viewport = {
@@ -42,7 +52,7 @@ export const viewport: Viewport = {
  * It also syncs the mobile browser chrome colour, which is why the two values
  * are duplicated from the token sheet rather than read from CSS.
  */
-const THEME_INIT = `(function(){try{var t=localStorage.getItem("lssd-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="light"?"#eceeec":"#0a0b0a")}}catch(e){}})();`;
+const THEME_INIT = `(function(){try{var t=localStorage.getItem("lssd-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="light"?"#f3f4f7":"#0c0e12")}}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -53,7 +63,7 @@ export default function RootLayout({
     <html
       lang="id"
       data-theme="dark"
-      className={`${archivo.variable} ${plexMono.variable}`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
       // The inline script below sets data-theme before hydration, so the
       // server markup and the client tree can legitimately differ here.
       suppressHydrationWarning

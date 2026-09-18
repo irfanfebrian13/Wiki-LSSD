@@ -29,7 +29,8 @@ export type Block =
   | { type: "flow"; title?: string; tracks: FlowTrack[] }
   | { type: "weapons"; classes: WeaponClass[]; variant?: "illegal" }
   | { type: "penal"; title: string; main: string; charges: string[] }
-  | { type: "patrol-form" };
+  | { type: "patrol-form" }
+  | { type: "penal-form" };
 
 export interface LegendItem {
   color: string;

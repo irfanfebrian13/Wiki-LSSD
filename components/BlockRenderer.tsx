@@ -17,6 +17,7 @@ import {
   Weapons,
 } from "./blocks";
 import { PatrolReportForm } from "./PatrolReportForm";
+import { PenalCodeGenerator } from "./PenalCodeGenerator";
 import { RadioCall } from "./RadioCall";
 
 /**
@@ -85,5 +86,8 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case "patrol-form":
       return <PatrolReportForm />;
+
+    case "penal-form":
+      return <PenalCodeGenerator />;
   }
 }

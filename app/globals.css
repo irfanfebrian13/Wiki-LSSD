@@ -3,9 +3,9 @@
 /* ============================================================================
    LSSD Deputy Pocketbook — design tokens
 
-   Direction: tactical / MDT terminal. Near-black ground, thin high-contrast
-   rules instead of soft cards, monospace for anything a deputy reads off a
-   screen mid-shift (codes, callsigns, plates, badge numbers).
+   Direction: modern tactical documentation, matching `lssd-wiki-modern.html`.
+   Near-black ground, charcoal surfaces, gold primary accent, mint secondary,
+   coral for warnings and danger.
 
    ⚠ TOKEN NAMES ARE LOAD-BEARING
    `lib/bbcode.ts` emits inline styles that reference `var(--surface-2)` and
@@ -18,60 +18,74 @@
   /* Dark is the default — this is a night-shift tool. */
   color-scheme: dark;
 
-  --bg: #0a0b0a;
-  --bg-2: #0e100e;
-  --surface: #131613;
-  --surface-2: #191d19;
-  --border: #262b26;
-  --border-soft: #1c211c;
+  --bg: #0c0e12;
+  --bg-2: #10131a;
+  --surface: #171b24;
+  --surface-2: #1d222d;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-soft: rgba(255, 255, 255, 0.05);
 
-  --text: #dde3dd;
-  --text-dim: #8d968d;
-  /* Green-tinted to match the accent hue. Every token is checked against AA
-     (4.5:1) on --bg, --surface and --surface-2 — this one is the tightest at
-     4.68:1, so darken it only against measurement, never by eye. */
-  --text-faint: #808881;
+  --text: #edeff3;
+  --text-dim: #8b93a1;
+  /* Micro-labels only. This is the reference palette's value and it sits below
+     AA on --surface; every body-copy token above it clears AA, so nothing a
+     deputy reads at length depends on this one. */
+  --text-faint: #5a6270;
 
-  /* LSSD green, kept as the identity accent. */
-  --accent: #7da876;
-  --accent-soft: rgba(125, 168, 118, 0.13);
-  /* Amber for priority / caution, red for danger and illegal items. */
-  --accent-2: #d9a441;
-  --accent-2-soft: rgba(217, 164, 65, 0.13);
-  --danger: #e5484d;
-  --danger-soft: rgba(229, 72, 77, 0.13);
+  /* Gold is the identity accent; mint is the positive/secondary one. */
+  --gold: #ffc65c;
+  --gold-soft: rgba(255, 198, 92, 0.14);
+  --mint: #5eead4;
+  --mint-soft: rgba(94, 234, 212, 0.14);
+  --coral: #ff6b6b;
+  --coral-soft: rgba(255, 107, 107, 0.14);
 
-  /* Corner radius. Kept modest — this is an MDT, not a phone app — but large
-     enough that every bordered box reads as deliberately rounded rather than
-     as a hairline that missed a pixel. */
-  --radius: 8px;
-  --radius-sm: 6px;
+  /* Text sitting on a filled gold surface — near-black here, white in light. */
+  --on-accent: #1a1300;
 
-  --font: var(--font-archivo), system-ui, sans-serif;
-  --mono: var(--font-plex-mono), ui-monospace, monospace;
+  /* The reference's ambient corner glow. Fixed to the viewport in `body::before`
+     so a 23-section page does not stretch the gradient. */
+  --glow-gold: rgba(255, 198, 92, 0.06);
+  --glow-mint: rgba(94, 234, 212, 0.05);
+
+  --display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font: var(--font-inter), system-ui, sans-serif;
+  --mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 [data-theme="light"] {
   /* Keeps native scrollbars, date pickers and form controls in step. */
   color-scheme: light;
 
-  --bg: #eceeec;
-  --bg-2: #e4e7e4;
-  --surface: #f7f8f7;
-  --surface-2: #eef0ee;
-  --border: #c6ccc6;
-  --border-soft: #d6dbd6;
+  --bg: #f3f4f7;
+  --bg-2: #eceef3;
+  --surface: #ffffff;
+  --surface-2: #f7f8fb;
+  --border: rgba(12, 14, 18, 0.08);
+  --border-strong: rgba(12, 14, 18, 0.14);
+  --border-soft: rgba(12, 14, 18, 0.05);
 
-  --text: #141714;
-  --text-dim: #4c544c;
-  --text-faint: #666c67;
+  --text: #12141a;
+  --text-dim: #5c6472;
+  /* The reference light theme leaves this at the dark value (#8b93a1), which is
+     only 3.1:1 on white. Darkened here to clear AA. */
+  --text-faint: #6a7180;
 
-  --accent: #3f6b39;
-  --accent-soft: rgba(63, 107, 57, 0.11);
-  --accent-2: #8a6314;
-  --accent-2-soft: rgba(138, 99, 20, 0.11);
-  --danger: #b3242a;
-  --danger-soft: rgba(179, 36, 42, 0.1);
+  /* The reference light theme defines no gold/mint/coral text colours at all —
+     it only overrides the *-soft fills — so these are chosen to clear AA on
+     white rather than inherited from dark, where they would be unreadable. */
+  --gold: #8a6314;
+  --gold-soft: rgba(255, 198, 92, 0.18);
+  --mint: #0d6e64;
+  --mint-soft: rgba(94, 234, 212, 0.2);
+  --coral: #b3242a;
+  --coral-soft: rgba(255, 107, 107, 0.14);
+
+  --on-accent: #ffffff;
+
+  --glow-gold: rgba(255, 198, 92, 0.25);
+  --glow-mint: rgba(94, 234, 212, 0.18);
 }
 
 /* Map the raw tokens into Tailwind's namespace.
@@ -83,29 +97,32 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-border-soft: var(--border-soft);
 
   --color-text: var(--text);
   --color-text-dim: var(--text-dim);
   --color-text-faint: var(--text-faint);
 
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-accent-2: var(--accent-2);
-  --color-accent-2-soft: var(--accent-2-soft);
-  --color-danger: var(--danger);
-  --color-danger-soft: var(--danger-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-on-accent: var(--on-accent);
 
-  /* The key here must be exactly `--radius`: that is the theme namespace
-     Tailwind's bare `.rounded` reads. (A `--radius-DEFAULT` alias is inert —
-     it maps nothing, and `.rounded` silently falls back to the built-in
-     0.25rem.) The self-reference is safe: this layered declaration loses to
-     the unlayered `:root` above, which supplies the literal value. */
-  --radius: var(--radius);
-  --radius-sm: var(--radius-sm);
+  /* The key must be exactly `--radius`: that is the theme namespace Tailwind's
+     bare `.rounded` reads. (A `--radius-DEFAULT` alias is inert.) These are
+     literal rather than var()-referenced, so no theme override is needed. */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
 
   --font-sans: var(--font);
   --font-mono: var(--mono);
+  --font-display: var(--display);
 }
 
 @layer base {
@@ -128,32 +145,39 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    transition: background-color 0.3s, color 0.3s;
   }
 
-  ::selection {
-    background: var(--accent-soft);
-    color: var(--text);
+  /* Display face for every heading; a `font-mono`/`font-sans` utility on the
+     element still wins, since utilities outrank the base layer. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--display);
   }
 
-  :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  /* A faint scanline grid — the MDT texture. Kept very low contrast so it
-     reads as material rather than decoration. */
+  /* Ambient corner glow — the reference's body backdrop, pinned to the
+     viewport instead of the document. */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background-image:
-      linear-gradient(var(--border-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
-    background-size: 44px 44px;
-    opacity: 0.4;
-    mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, #000 0%, transparent 75%);
+    background:
+      radial-gradient(circle at 15% 0%, var(--glow-gold), transparent 40%),
+      radial-gradient(circle at 85% 20%, var(--glow-mint), transparent 40%);
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
   }
 
   ::-webkit-scrollbar {
@@ -164,7 +188,7 @@
     background: var(--bg);
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--border);
+    background: var(--border-strong);
     border: 2px solid var(--bg);
     border-radius: 999px;
   }
@@ -192,7 +216,7 @@
 }
 .report-preview summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--gold);
   font-family: var(--mono);
   font-size: 11px;
   text-transform: uppercase;

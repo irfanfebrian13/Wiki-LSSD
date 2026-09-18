@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { BTN_MINT } from "./ui";
+
 /** How long the button shows its "Copied" confirmation. */
 const COPIED_MS = 1800;
 
@@ -57,16 +59,16 @@ export function RadioCall({
   };
 
   return (
-    <div className="rounded border border-border bg-surface px-5 py-4">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <h4 className="text-[15px] font-semibold leading-snug text-text">
+    <div className="rounded-lg border border-border bg-surface px-[26px] py-5">
+      <div className="mb-3.5 flex items-start justify-between gap-3">
+        <h4 className="font-display text-[15.5px] font-semibold leading-snug text-text">
           {title}
         </h4>
         <button
           type="button"
           onClick={copy}
           aria-label={`Copy radio call: ${title}`}
-          className="shrink-0 rounded-sm border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-dim transition-colors hover:border-accent hover:text-accent"
+          className={`${BTN_MINT} shrink-0 px-3.5 py-1.5 text-[11.5px]`}
         >
           {copied ? "Copied" : "Copy"}
         </button>
@@ -78,7 +80,7 @@ export function RadioCall({
       </div>
 
       {note ? (
-        <p className="mt-3.5 border-t border-border-soft pt-3 text-[13px] leading-relaxed text-text-faint">
+        <p className="mt-3.5 border-t border-border pt-3 text-[12.5px] leading-relaxed text-text-faint">
           {note}
         </p>
       ) : null}
@@ -88,7 +90,7 @@ export function RadioCall({
 
 /**
  * One language row. The English row is the on-air script, so it gets the
- * monospace treatment and the accent rule; the translation sits quieter.
+ * monospace treatment and the gold rule; the translation sits quieter.
  */
 function Phrase({
   lang,
@@ -102,10 +104,8 @@ function Phrase({
   return (
     <div className="flex items-start gap-3">
       <span
-        className={`mt-px shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-bold ${
-          primary
-            ? "bg-accent-soft text-accent"
-            : "bg-accent-2-soft text-accent-2"
+        className={`mt-px shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
+          primary ? "bg-gold-soft text-gold" : "bg-mint-soft text-mint"
         }`}
       >
         {lang}
@@ -113,7 +113,7 @@ function Phrase({
       <p
         className={
           primary
-            ? "whitespace-pre-wrap rounded-sm border-l-2 border-l-accent bg-bg px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-text"
+            ? "whitespace-pre-wrap rounded-sm border-l-2 border-l-gold bg-bg px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-text"
             : "whitespace-pre-wrap py-1 text-[13px] leading-relaxed text-text-dim"
         }
       >

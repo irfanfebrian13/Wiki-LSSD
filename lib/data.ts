@@ -1228,5 +1228,20 @@ export const POCKETBOOK: Pocketbook = {
         },
       ],
     },
+    {
+      id: "penal-generator",
+      icon: "⚖",
+      title: "Penal Code Generator",
+      group: "Form Helper",
+      blocks: [
+        {
+          type: "intro",
+          text: "Centang / isi apa yang suspect bawa dan lakukan — daftar pasal yang berlaku muncul otomatis di panel bawah. Cukup sebagai bantuan cepat, keputusan akhir tetap di tangan deputy.",
+        },
+        {
+          type: "penal-form",
+        },
+      ],
+    },
   ],
 };

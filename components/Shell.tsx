@@ -10,8 +10,15 @@ import { SectionView } from "./SectionView";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
 
-/** Below this width the sidebar becomes an overlay drawer. */
-const MOBILE_QUERY = "(max-width: 900px)";
+/**
+ * Below this width the sidebar becomes an overlay drawer.
+ *
+ * Deliberately the same 1024px as Tailwind's `lg` breakpoint, which every
+ * `lg:` class below uses. The two must agree: if the media query and the CSS
+ * disagreed, there would be a band of widths where the topbar is hidden but the
+ * sidebar is still off-canvas — leaving no navigation at all.
+ */
+const MOBILE_QUERY = "(max-width: 1023px)";
 
 /* The URL hash, read as an external store. Using a server snapshot of "" keeps
    the server HTML and the hydration pass identical; the real hash is adopted
@@ -192,7 +199,7 @@ export function Shell({ sections }: { sections: Section[] }) {
     <>
       <a
         href="#content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-sm focus:border focus:border-accent focus:bg-surface focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-text"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-sm focus:border focus:border-gold focus:bg-surface focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-text"
       >
         Lompat ke konten
       </a>
@@ -205,15 +212,15 @@ export function Shell({ sections }: { sections: Section[] }) {
           aria-expanded={drawerOpen}
           aria-controls="sidebar"
           aria-label="Buka navigasi"
-          className="flex flex-col gap-1 rounded-sm border border-border bg-surface p-2"
+          className="flex flex-col gap-1 rounded-sm border border-border-strong bg-surface p-2"
         >
           <span className="block h-px w-4 bg-text" />
           <span className="block h-px w-4 bg-text" />
           <span className="block h-px w-4 bg-text" />
         </button>
 
-        <div className="flex items-center gap-2 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-text">
-          <span aria-hidden className="h-1.5 w-1.5 bg-accent" />
+        <div className="flex items-center gap-2 font-display text-[13px] font-bold text-text">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
           LSSD Pocketbook
         </div>
 
@@ -226,10 +233,10 @@ export function Shell({ sections }: { sections: Section[] }) {
       </div>
 
       <div className="relative z-10 flex">
-        {/* Sidebar — drawer on mobile, fixed column from lg up */}
+        {/* Sidebar — drawer on mobile, floating sticky card from lg up */}
         <aside
           id="sidebar"
-          className={`fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto border-r border-border bg-bg-2 px-3 py-4 transition-transform duration-300 lg:sticky lg:top-0 lg:z-10 lg:h-screen lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:top-4 lg:z-10 lg:my-4 lg:ml-4 lg:mr-0 lg:h-[calc(100vh-32px)] lg:w-[264px] lg:translate-x-0 lg:rounded-lg lg:border ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -253,7 +260,7 @@ export function Shell({ sections }: { sections: Section[] }) {
         ) : null}
 
         <main id="content" className="min-w-0 flex-1">
-          <div className="mx-auto w-full max-w-[900px] px-5 pb-10 pt-8 lg:px-10 lg:pt-12">
+          <div className="mx-auto w-full max-w-[900px] px-[18px] pb-[60px] pt-6 lg:px-11 lg:pb-20 lg:pt-[38px]">
             {!isSearching ? <Hero meta={heroStats} /> : null}
 
             {isSearching && visibleIds.size === 0 ? (
@@ -269,7 +276,7 @@ export function Shell({ sections }: { sections: Section[] }) {
               </div>
             ) : null}
 
-            <div className="grid gap-12">
+            <div className="grid gap-16">
               {sections.map((section, index) => (
                 <div key={section.id} hidden={!visibleIds.has(section.id)}>
                   <SectionView
@@ -281,8 +288,8 @@ export function Shell({ sections }: { sections: Section[] }) {
               ))}
             </div>
 
-            <footer className="mt-14 border-t border-border-soft pt-5">
-              <p className="font-mono text-[11px] text-text-faint">
+            <footer className="mt-12 border-t border-border pt-[18px]">
+              <p className="text-[11.5px] text-text-faint">
                 LSSD Deputy Pocketbook — disusun dari dokumen internal.
               </p>
             </footer>
@@ -311,7 +318,7 @@ function BackToTop() {
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Kembali ke atas"
-      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface text-[16px] text-text transition-all duration-200 hover:border-accent hover:text-accent ${
+      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border-strong bg-surface text-[16px] text-text transition-all duration-200 hover:border-gold hover:text-gold ${
         shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"
       }`}
     >

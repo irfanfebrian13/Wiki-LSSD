@@ -44,6 +44,9 @@ function revealInSidebar(el: HTMLElement) {
   }
 }
 
+/** The group dots: a fixed cycle so every group reads as a distinct category. */
+const GROUP_DOTS = ["bg-gold", "bg-mint", "bg-coral"];
+
 interface SidebarProps {
   groups: NavGroup[];
   /** Ids currently matching the search query. */
@@ -66,7 +69,7 @@ export function Sidebar({
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(() => {
     const collapsedSet = new Set<string>();
-    groups.forEach(group => collapsedSet.add(group.name));
+    groups.forEach((group) => collapsedSet.add(group.name));
     return collapsedSet;
   });
   /* `tick` makes every click a distinct value, so re-clicking the same chip
@@ -116,52 +119,49 @@ export function Sidebar({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-2 pb-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/sheriff.png"
-          alt=""
-          width={40}
-          height={40}
-          className="h-10 w-10 shrink-0 object-contain"
-        />
-        <div>
-          <div className="text-[17px] font-extrabold leading-tight tracking-[0.02em] text-text">
-            LSSD
+      {/* Brand */}
+      <div className="flex items-center gap-3 px-5 pb-4 pt-[22px]">
+        <div className="grid h-[42px] w-[42px] shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold to-[#e0a83e] font-display text-[15px] font-bold text-on-accent">
+          LS
+        </div>
+        <div className="min-w-0">
+          <div className="font-display text-[16.5px] font-bold leading-tight text-text">
+            LSSD Pocketbook
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-            Deputy Pocketbook
-          </div>
+          <div className="mt-px text-[11px] text-text-dim">Deputy Handbook</div>
         </div>
       </div>
 
-      <div className="relative mb-3.5">
-        <input
-          ref={searchInputRef}
-          type="search"
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Cari… (mis. 10-4, miranda)"
-          aria-label="Cari di pocketbook"
-          autoComplete="off"
-          className="w-full rounded-sm border border-border bg-surface py-2 pl-3 pr-11 text-[13.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
-        />
-        <kbd
-          aria-hidden
-          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm border border-border bg-surface-2 px-1.5 py-px font-mono text-[10px] text-text-faint"
-        >
-          /
-        </kbd>
+      {/* Search */}
+      <div className="px-4 pb-3.5">
+        <div className="relative">
+          <input
+            ref={searchInputRef}
+            type="search"
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
+            placeholder="Cari materi… (mis. 10-4, miranda)"
+            aria-label="Cari di pocketbook"
+            autoComplete="off"
+            className="w-full rounded-sm border border-border bg-surface-2 py-[9px] pl-3 pr-11 text-[13px] text-text placeholder:text-text-faint focus:border-gold focus:outline-none"
+          />
+          <kbd
+            aria-hidden
+            className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm border border-border bg-surface px-1.5 py-px font-mono text-[10px] text-text-faint"
+          >
+            /
+          </kbd>
+        </div>
       </div>
 
       {!isSearching ? (
-        <div className="mb-3.5 flex flex-wrap gap-1.5 border-b border-border-soft pb-3.5">
+        <div className="mb-1 flex flex-wrap gap-1.5 px-4 pb-3.5">
           {QUICK_JUMPS.map((jump) => (
             <a
               key={jump.label}
               href={`#${jump.target}`}
               onClick={() => navigateTo(jump.target)}
-              className="rounded-sm border border-border bg-surface px-2.5 py-1 font-mono text-[11px] font-medium text-text-dim transition-colors hover:border-accent hover:text-accent"
+              className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10.5px] font-medium text-text-dim transition-colors hover:border-gold hover:text-gold"
             >
               {jump.label}
             </a>
@@ -169,8 +169,9 @@ export function Sidebar({
         </div>
       ) : null}
 
-      <nav ref={navRef} aria-label="Bagian pocketbook" className="flex-1">
-        {groups.map((group) => {
+      {/* Navigation */}
+      <nav ref={navRef} aria-label="Bagian pocketbook" className="flex-1 px-3 pb-4">
+        {groups.map((group, gi) => {
           const items = group.items.filter((s) => visibleIds.has(s.id));
           if (items.length === 0) return null;
 
@@ -178,18 +179,22 @@ export function Sidebar({
           const panelId = `${baseId}-${group.name}`;
 
           return (
-            <div key={group.name} className="mb-3">
+            <div key={group.name} className="mt-4 first:mt-0">
               <button
                 type="button"
                 onClick={() => toggleGroup(group.name)}
                 aria-expanded={!isCollapsed}
                 aria-controls={panelId}
-                className="flex w-full items-center gap-2 px-2 py-1.5 text-left font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-text-faint transition-colors hover:text-text-dim"
+                className="mb-1.5 flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em] text-text-faint transition-colors hover:text-text-dim"
               >
-                <span aria-hidden className="text-[9px]">
+                <span
+                  aria-hidden
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${GROUP_DOTS[gi % GROUP_DOTS.length]}`}
+                />
+                {group.name}
+                <span aria-hidden className="ml-auto text-[9px]">
                   {isCollapsed ? "▸" : "▾"}
                 </span>
-                {group.name}
               </button>
 
               <ul id={panelId} hidden={isCollapsed} className="grid gap-px">
@@ -202,16 +207,16 @@ export function Sidebar({
                         data-nav-id={section.id}
                         aria-current={active ? "true" : undefined}
                         onClick={() => navigateTo(section.id)}
-                        className={`flex items-center gap-2.5 rounded-sm border-l-2 px-2.5 py-1.5 text-[13px] transition-colors ${
+                        className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-[9px] text-[13.5px] font-medium transition-colors ${
                           active
-                            ? "border-l-accent bg-accent-soft font-medium text-text"
-                            : "border-l-transparent text-text-dim hover:bg-surface hover:text-text"
+                            ? "bg-gold-soft font-semibold text-gold"
+                            : "text-text-dim hover:bg-surface-2 hover:text-text"
                         }`}
                       >
                         <span
                           aria-hidden
                           className={`w-4 shrink-0 text-center text-[12px] ${
-                            active ? "text-accent" : "opacity-70"
+                            active ? "text-gold" : "opacity-70"
                           }`}
                         >
                           {section.icon}
@@ -227,10 +232,16 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="mt-2 border-t border-border-soft pt-3">
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          LSSD · Internal Use
-        </p>
+      {/* Footer */}
+      <div className="flex items-center gap-2.5 border-t border-border px-5 pb-[18px] pt-3.5">
+        <div
+          aria-hidden
+          className="h-[30px] w-[30px] shrink-0 rounded-[9px] bg-gradient-to-br from-mint to-[#3fc7ae]"
+        />
+        <div className="min-w-0">
+          <div className="text-[12px] font-semibold text-text">LSSD</div>
+          <div className="font-mono text-[11px] text-text-faint">Internal Use</div>
+        </div>
       </div>
     </div>
   );

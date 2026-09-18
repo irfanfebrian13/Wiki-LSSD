@@ -42,4 +42,7 @@ next-env.d.ts
 
 # claude code local state (agents, skills and plans are machine-local tooling)
 .claude/
-*.Zone.Identifier
+# Windows marks downloaded files as `<name>:Zone.Identifier` (a colon, not a
+# dot), so the leading `*` must be unbounded — `*.Zone.Identifier` matches
+# nothing and silently lets these artifacts into the tree.
+*Zone.Identifier

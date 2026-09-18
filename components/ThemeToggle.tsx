@@ -39,7 +39,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     document.documentElement.setAttribute("data-theme", next);
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", next === "light" ? "#eceeec" : "#0a0b0a");
+      ?.setAttribute("content", next === "light" ? "#f3f4f7" : "#0c0e12");
     try {
       localStorage.setItem(THEME_KEY, next);
     } catch {
@@ -49,13 +49,15 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     // keeps this the single source of truth.
   };
 
+  const label = `Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`;
+
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label={`Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`}
-      title={`Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`}
-      className={`rounded-sm border border-border bg-surface px-2 py-1 font-mono text-[13px] leading-none text-text-dim transition-colors hover:border-accent hover:text-accent ${className}`}
+      aria-label={label}
+      title={label}
+      className={`grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-colors hover:border-gold ${className}`}
     >
       <span aria-hidden>{theme === "dark" ? "◐" : "◑"}</span>
     </button>

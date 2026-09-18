@@ -1,7 +1,17 @@
+import { BTN_GOLD, BTN_OUTLINE } from "./ui";
+
 interface HeroProps {
   meta: { sections: number; tenCodes: number; groups: number };
 }
 
+/**
+ * The landing block above the first section: identity chip, title, the stat row
+ * and the two primary actions — the reference's `.hero-chip` / `.stat-row` /
+ * `.hero-actions` composition.
+ *
+ * The actions are anchors rather than buttons so they keep working without
+ * JavaScript, exactly as the quick-jump chips do.
+ */
 export function Hero({ meta }: HeroProps) {
   const stats = [
     { value: meta.sections, label: "Bagian" },
@@ -10,30 +20,42 @@ export function Hero({ meta }: HeroProps) {
   ];
 
   return (
-    <div className="mb-10">
-      <span className="inline-block rounded-sm border border-accent/35 bg-accent-soft px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
-        LSSD · Internal
+    <div className="mb-12">
+      <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
+        🛡️ County of Los Santos
       </span>
 
-      <h1 className="mt-4 text-[32px] font-extrabold leading-[1.1] tracking-tight text-text lg:text-[40px]">
+      <h1 className="font-display text-[30px] font-bold leading-[1.1] tracking-[-0.01em] text-text lg:text-[38px]">
         LSSD Deputy Pocketbook
       </h1>
-      <p className="mt-2.5 font-mono text-[13px] uppercase tracking-[0.14em] text-text-dim">
-        Los Santos Sheriff Department
+      <p className="mt-2 max-w-[58ch] text-[14.5px] leading-relaxed text-text-dim">
+        Los Santos Sheriff Department — semua yang kamu butuhkan sebelum turun
+        patroli: kode radio, SOP taktis, penal code, sampai tool bikin laporan
+        otomatis.
       </p>
 
-      <dl className="mt-7 flex flex-wrap gap-x-9 gap-y-4">
+      <div className="mt-[22px] flex flex-wrap gap-3.5">
         {stats.map((stat) => (
-          <div key={stat.label}>
-            <dd className="font-mono text-[24px] font-bold leading-none text-accent">
+          <div
+            key={stat.label}
+            className="min-w-[120px] rounded-md border border-border bg-surface px-5 py-4"
+          >
+            <div className="font-display text-[24px] font-bold leading-none text-gold">
               {stat.value}
-            </dd>
-            <dt className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-              {stat.label}
-            </dt>
+            </div>
+            <div className="mt-1 text-[11px] text-text-faint">{stat.label}</div>
           </div>
         ))}
-      </dl>
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        <a href="#ten-codes" className={BTN_GOLD}>
+          Mulai Belajar →
+        </a>
+        <a href="#patrol-report" className={BTN_OUTLINE}>
+          Buka Report Generator
+        </a>
+      </div>
     </div>
   );
 }

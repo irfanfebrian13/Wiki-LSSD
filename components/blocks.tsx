@@ -7,31 +7,15 @@ import type {
   WeaponClass,
 } from "@/lib/types";
 
+import { Card, CardTitle, CodeChip, MicroLabel } from "./ui";
+
 /* ==========================================================================
-   Shared presentation primitives
+   Content blocks.
+
+   Every one of these renders data straight out of `lib/data.ts` — the markup
+   changed for the redesign, the content did not. Wording, codes, ranks and
+   charges are passed through verbatim.
    ========================================================================== */
-
-/** Uppercase micro-label used above grouped content. */
-export function MicroLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
-      {children}
-    </div>
-  );
-}
-
-/** A panel: flat surface, hairline border, no soft shadow. */
-export function Panel({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`rounded border border-border bg-surface ${className}`}>{children}</div>
-  );
-}
 
 /* ==========================================================================
    Prose blocks
@@ -55,33 +39,25 @@ export function TitledCard({
   text: string;
   tone: "info" | "ok";
 }) {
-  const accent = tone === "info" ? "var(--accent-2)" : "var(--accent)";
   return (
-    <Panel className="px-5 py-4" >
-      <div
-        className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: accent }}
-      >
-        {title}
-      </div>
-      <p className="max-w-[68ch] text-[14.5px] leading-relaxed text-text-dim">
+    <Card accent={tone === "info" ? "gold" : "mint"}>
+      <CardTitle>{title}</CardTitle>
+      <p className="max-w-[68ch] text-[14px] leading-relaxed text-text-dim">
         {text}
       </p>
-    </Panel>
+    </Card>
   );
 }
 
+/** A callout — the reference's coral warning box. */
 export function Callout({ text }: { text: string }) {
   return (
-    <div className="rounded border border-accent-2/40 bg-accent-2-soft px-5 py-4">
+    <div className="rounded-md border border-coral/30 bg-coral-soft px-4 py-[13px]">
       <div className="flex items-start gap-3">
-        <span
-          aria-hidden
-          className="mt-0.5 font-mono text-sm font-bold text-accent-2"
-        >
+        <span aria-hidden className="mt-px shrink-0 font-mono text-sm font-bold text-coral">
           !
         </span>
-        <p className="text-[14.5px] font-semibold leading-relaxed text-text">
+        <p className="text-[13.5px] font-semibold leading-relaxed text-text">
           {text}
         </p>
       </div>
@@ -91,14 +67,12 @@ export function Callout({ text }: { text: string }) {
 
 export function Quote({ title, text }: { title: string; text: string }) {
   return (
-    <Panel className="border-l-2 border-l-accent px-5 py-4">
-      <div className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
-        {title}
-      </div>
-      <p className="max-w-[68ch] text-[14.5px] italic leading-relaxed text-text">
+    <Card accent="mint">
+      <CardTitle>{title}</CardTitle>
+      <p className="max-w-[68ch] text-[14px] italic leading-relaxed text-text-dim">
         &ldquo;{text}&rdquo;
       </p>
-    </Panel>
+    </Card>
   );
 }
 
@@ -111,22 +85,22 @@ export function Bullets({
 }) {
   return (
     <div>
-      {title ? <MicroLabel>{title}</MicroLabel> : null}
-      <Panel className="px-5 py-4">
-        <ul className="grid gap-2.5">
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
+      <Card>
+        <ul className="grid gap-3">
           {items.map((item, i) => (
             <li key={i} className="flex gap-3">
               <span
                 aria-hidden
-                className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-accent"
+                className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold"
               />
-              <span className="text-[14.5px] leading-relaxed text-text-dim">
+              <span className="text-[14px] leading-relaxed text-text-dim">
                 {item}
               </span>
             </li>
           ))}
         </ul>
-      </Panel>
+      </Card>
     </div>
   );
 }
@@ -134,22 +108,27 @@ export function Bullets({
 export function Steps({ title, items }: { title?: string; items: string[] }) {
   return (
     <div>
-      {title ? <MicroLabel>{title}</MicroLabel> : null}
-      <ol className="grid gap-2">
-        {items.map((item, i) => (
-          <li key={i} className="flex gap-3.5 rounded border border-border bg-surface px-4 py-3">
-            <span
-              aria-hidden
-              className="grid h-6 w-6 shrink-0 place-items-center rounded-sm bg-accent-soft font-mono text-[11px] font-bold text-accent"
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
+      <Card className="py-2">
+        <ol>
+          {items.map((item, i) => (
+            <li
+              key={i}
+              className="flex gap-3.5 border-b border-border py-[13px] last:border-b-0"
             >
-              {i + 1}
-            </span>
-            <span className="text-[14px] leading-relaxed text-text-dim">
-              {item}
-            </span>
-          </li>
-        ))}
-      </ol>
+              <span
+                aria-hidden
+                className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-sm bg-surface-2 font-display text-[13px] font-bold text-gold"
+              >
+                {i + 1}
+              </span>
+              <span className="pt-0.5 text-[13.5px] leading-relaxed text-text-dim">
+                {item}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </Card>
     </div>
   );
 }
@@ -169,8 +148,8 @@ export function Table({
 }) {
   return (
     <div>
-      {title ? <MicroLabel>{title}</MicroLabel> : null}
-      <div className="overflow-x-auto rounded border border-border">
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
+      <div className="overflow-x-auto rounded-lg border border-border bg-surface px-5 py-2">
         <table className="w-full border-collapse text-[13.5px]">
           <thead>
             <tr>
@@ -178,7 +157,7 @@ export function Table({
                 <th
                   key={i}
                   scope="col"
-                  className="whitespace-nowrap border-b border-border bg-surface-2 px-4 py-2.5 text-left font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint"
+                  className="whitespace-nowrap border-b border-border-strong px-2.5 py-2 text-left font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-text-faint"
                 >
                   {h}
                 </th>
@@ -187,14 +166,14 @@ export function Table({
           </thead>
           <tbody>
             {rows.map((row, r) => (
-              <tr key={r} className="transition-colors hover:bg-surface">
+              <tr key={r} className="transition-colors hover:bg-surface-2">
                 {row.map((cell, c) => (
                   <td
                     key={c}
                     className={
                       c === 0
-                        ? "whitespace-nowrap border-b border-border-soft px-4 py-2 font-mono font-medium text-accent"
-                        : "border-b border-border-soft px-4 py-2 text-text-dim"
+                        ? "whitespace-nowrap border-b border-border px-2.5 py-[9px] font-mono text-[12.5px] font-medium text-gold"
+                        : "border-b border-border px-2.5 py-[9px] text-text"
                     }
                   >
                     {cell}
@@ -212,23 +191,23 @@ export function Table({
 export function DefList({ title, items }: { title?: string; items: DefItem[] }) {
   return (
     <div>
-      {title ? <MicroLabel>{title}</MicroLabel> : null}
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
       <dl className="grid gap-2">
         {items.map((item, i) => (
           <div
             key={i}
-            className="grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded border border-border bg-surface px-4 py-3"
+            className="grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded-md border border-border bg-surface px-4 py-3"
             style={
               item.color ? { borderLeftWidth: 2, borderLeftColor: item.color } : undefined
             }
           >
             <dt
-              className="font-mono text-[13px] font-semibold"
-              style={{ color: item.color ?? "var(--accent)" }}
+              className="font-mono text-[12.5px] font-semibold"
+              style={{ color: item.color ?? "var(--gold)" }}
             >
               {item.term}
             </dt>
-            <dd className="text-[14px] leading-relaxed text-text-dim">
+            <dd className="text-[13.5px] leading-relaxed text-text-dim">
               {item.desc}
             </dd>
           </div>
@@ -244,18 +223,12 @@ export function Ranks({ items }: { items: string[] }) {
       {items.map((rank, i) => (
         <li
           key={i}
-          className="group flex items-center gap-3.5 rounded border border-border bg-surface px-4 py-2.5 transition-transform hover:translate-x-1"
+          className="flex items-center gap-3.5 rounded-md border border-border bg-surface px-4 py-2.5 transition-transform duration-150 hover:translate-x-1"
         >
-          <span
-            aria-hidden
-            className="w-6 font-mono text-[11px] text-text-faint"
-          >
+          <span aria-hidden className="w-6 font-mono text-[11px] text-text-faint">
             {String(i + 1).padStart(2, "0")}
           </span>
-          <span
-            className="text-[14px] font-semibold"
-            style={{ color: rankColor(rank) }}
-          >
+          <span className="text-[14px] font-semibold" style={{ color: rankColor(rank) }}>
             {rank}
           </span>
         </li>
@@ -267,16 +240,19 @@ export function Ranks({ items }: { items: string[] }) {
 export function Legend({ title, items }: { title: string; items: LegendItem[] }) {
   return (
     <div>
-      <MicroLabel>{title}</MicroLabel>
+      <MicroLabel className="mb-3">{title}</MicroLabel>
       <div className="grid gap-2">
         {items.map((item, i) => (
-          <div key={i} className="flex items-start gap-3 rounded border border-border bg-surface px-4 py-2.5">
+          <div
+            key={i}
+            className="flex items-start gap-3 rounded-md border border-border bg-surface px-4 py-2.5"
+          >
             <span
               aria-hidden
               className="mt-[5px] h-3.5 w-3.5 shrink-0 rounded-sm"
               style={{ background: item.color }}
             />
-            <div className="text-[14px]">
+            <div className="text-[13.5px]">
               <span className="font-semibold text-text">{item.label}</span>
               <span className="text-text-dim"> — {item.desc}</span>
             </div>
@@ -291,9 +267,9 @@ export function Tree({ items }: { items: TreeNode[] }) {
   return (
     <div className="grid gap-3">
       {items.map((node, i) => (
-        <div key={i} className="rounded border border-border bg-surface px-4 py-3.5">
+        <div key={i} className="rounded-lg border border-border bg-surface px-4 py-3.5">
           <div className="flex items-center gap-2.5 text-[14px] font-semibold text-text">
-            <span aria-hidden className="text-accent">
+            <span aria-hidden className="text-gold">
               ▸
             </span>
             {node.name}
@@ -324,18 +300,18 @@ export function Tree({ items }: { items: TreeNode[] }) {
 export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] }) {
   return (
     <div>
-      {title ? <MicroLabel>{title}</MicroLabel> : null}
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
       <div className="grid gap-4 lg:grid-cols-2">
         {tracks.map((track, t) => (
-          <div key={t} className="rounded border border-border bg-surface px-4 py-3.5">
-            <h4 className="mb-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
+          <div key={t} className="rounded-lg border border-border bg-surface px-4 py-3.5">
+            <h4 className="mb-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-gold">
               {track.title}
             </h4>
 
             <ol className="grid gap-0">
               {track.steps.map((step, s) => (
                 <li key={s}>
-                  <div className="flex items-center gap-2.5 rounded-sm border border-border-soft bg-bg px-3 py-2">
+                  <div className="flex items-center gap-2.5 rounded-sm border border-border bg-bg px-3 py-2">
                     <span
                       aria-hidden
                       className="w-4 shrink-0 text-center font-mono text-[11px] text-text-faint"
@@ -354,8 +330,8 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
                           key={b}
                           className={`rounded-sm border-l-2 px-3 py-2 font-mono text-[11.5px] leading-relaxed ${
                             branch.tone === "ok"
-                              ? "border-l-accent bg-accent-soft text-text-dim"
-                              : "border-l-danger bg-danger-soft text-text-dim"
+                              ? "border-l-mint bg-mint-soft text-text-dim"
+                              : "border-l-coral bg-coral-soft text-text-dim"
                           }`}
                         >
                           {branch.label}
@@ -363,10 +339,7 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
                       ))}
                     </div>
                   ) : (
-                    <div
-                      aria-hidden
-                      className="mx-auto h-3.5 w-px bg-border"
-                    />
+                    <div aria-hidden className="mx-auto h-3.5 w-px bg-border" />
                   )}
                 </li>
               ))}
@@ -389,10 +362,10 @@ export function Weapons({
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {classes.map((cls, i) => (
-        <div key={i} className="rounded border border-border bg-surface px-4 py-3.5">
+        <div key={i} className="rounded-lg border border-border bg-surface px-4 py-3.5">
           <h4
-            className={`mb-3 border-b border-border-soft pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] ${
-              illegal ? "text-danger" : "text-accent"
+            className={`mb-3 border-b border-border pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] ${
+              illegal ? "text-coral" : "text-gold"
             }`}
           >
             {cls.name}
@@ -400,10 +373,7 @@ export function Weapons({
           <ol className="grid gap-1.5">
             {cls.items.map((item, k) => (
               <li key={k} className="flex gap-2.5 text-[13.5px] text-text-dim">
-                <span
-                  aria-hidden
-                  className="w-4 shrink-0 font-mono text-[11px] text-text-faint"
-                >
+                <span aria-hidden className="w-4 shrink-0 font-mono text-[11px] text-text-faint">
                   {k + 1}
                 </span>
                 {item}
@@ -426,21 +396,21 @@ export function Penal({
   charges: string[];
 }) {
   return (
-    <Panel className="px-5 py-4">
-      <h4 className="text-[16px] font-semibold text-text">{title}</h4>
-      <span className="mt-2 mb-3.5 inline-block rounded-sm bg-danger-soft px-2.5 py-1 font-mono text-[12px] font-semibold text-danger">
-        {main}
+    <Card accent="gold">
+      <h4 className="font-display text-[16px] font-semibold text-text">{title}</h4>
+      <span className="mb-3.5 mt-2 inline-block">
+        <CodeChip className="border-coral/30 bg-coral-soft text-coral">{main}</CodeChip>
       </span>
       <ul className="grid gap-2">
         {charges.map((charge, i) => (
-          <li key={i} className="relative pl-5 text-[14px] leading-relaxed text-text-dim">
-            <span aria-hidden className="absolute left-0 font-bold text-accent">
+          <li key={i} className="relative pl-5 text-[13.5px] leading-relaxed text-text-dim">
+            <span aria-hidden className="absolute left-0 font-bold text-gold">
               §
             </span>
             {charge}
           </li>
         ))}
       </ul>
-    </Panel>
+    </Card>
   );
 }

@@ -10,6 +10,18 @@ import {
   type ReportInput,
 } from "@/lib/bbcode";
 
+import {
+  BTN_DANGER,
+  BTN_GOLD,
+  BTN_MINT,
+  BTN_OUTLINE,
+  Card,
+  CardTitle,
+  FIELD,
+  Field,
+  OutputBox,
+} from "./ui";
+
 /**
  * Patrol Report Generator.
  *
@@ -25,12 +37,10 @@ interface EvidenceProps {
 
 function EvidenceFields({ links, onChange }: EvidenceProps) {
   return (
-    <div className="grid gap-1.5">
-      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-        Evidence
-      </span>
+    <div className="grid gap-2">
+      <span className="text-[12px] font-semibold text-text-dim">Evidence</span>
       {links.map((link, i) => (
-        <div key={i} className="flex gap-1.5">
+        <div key={i} className="grid grid-cols-[1fr_auto] items-center gap-2.5">
           <input
             type="url"
             value={link}
@@ -41,14 +51,14 @@ function EvidenceFields({ links, onChange }: EvidenceProps) {
               next[i] = e.target.value;
               onChange(next);
             }}
-            className="min-w-0 flex-1 rounded-sm border border-border bg-bg px-2.5 py-1.5 font-mono text-[12.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className={`${FIELD} font-mono text-[12.5px]`}
           />
           {links.length > 1 ? (
             <button
               type="button"
               aria-label={`Remove evidence link ${i + 1}`}
               onClick={() => onChange(links.filter((_, k) => k !== i))}
-              className="rounded-sm border border-border px-2 font-mono text-xs text-text-faint transition-colors hover:border-danger hover:text-danger"
+              className={`${BTN_DANGER} h-9 w-9 px-0 text-base leading-none`}
             >
               ×
             </button>
@@ -58,7 +68,7 @@ function EvidenceFields({ links, onChange }: EvidenceProps) {
       <button
         type="button"
         onClick={() => onChange([...links, ""])}
-        className="justify-self-start rounded-sm border border-dashed border-border px-2.5 py-1 font-mono text-[11px] font-semibold text-accent transition-colors hover:border-accent"
+        className={`${BTN_MINT} justify-self-start`}
       >
         + Evidence
       </button>
@@ -77,55 +87,44 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
     onChange({ ...entry, [key]: value });
 
   return (
-    <fieldset className="rounded border border-border bg-surface px-4 py-3.5">
-      <legend className="px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
-        {legend}
-      </legend>
+    <Card>
+      <CardTitle tag={legend}>Report</CardTitle>
 
       <div className="grid gap-3">
-        <label className="grid gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Title
-          </span>
+        <Field label="Title">
           <input
             value={entry.title}
             placeholder="Report title"
             onChange={(e) => set("title", e.target.value)}
-            className="rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className={FIELD}
           />
-        </label>
+        </Field>
 
-        <label className="grid gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Date
-          </span>
+        <Field label="Date">
           <input
             type="date"
             value={entry.date}
             onChange={(e) => set("date", e.target.value)}
-            className="rounded-sm border border-border bg-bg px-2.5 py-1.5 font-mono text-[13px] text-text focus:border-accent focus:outline-none"
+            className={`${FIELD} font-mono`}
           />
-        </label>
+        </Field>
 
-        <label className="grid gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Details
-          </span>
+        <Field label="Details">
           <textarea
             rows={7}
             value={entry.details}
             placeholder="Write details..."
             onChange={(e) => set("details", e.target.value)}
-            className="resize-y rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] leading-relaxed text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className={`${FIELD} resize-y leading-relaxed`}
           />
-        </label>
+        </Field>
 
         <EvidenceFields
           links={entry.evidence}
           onChange={(evidence) => set("evidence", evidence)}
         />
       </div>
-    </fieldset>
+    </Card>
   );
 }
 
@@ -173,29 +172,24 @@ export function PatrolReportForm() {
   ];
 
   return (
-    <div className="grid gap-4">
-      <fieldset className="rounded border border-border bg-surface px-4 py-3.5">
-        <legend className="px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
-          Deputy Information
-        </legend>
+    <div className="grid gap-[18px]">
+      <Card accent="gold">
+        <CardTitle tag="1">Deputy Information</CardTitle>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {deputyFields.map((f) => (
-            <label key={f.key} className="grid gap-1">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-                {f.label}
-              </span>
+            <Field key={f.key} label={f.label}>
               <input
                 value={input[f.key]}
                 placeholder={f.placeholder}
                 onChange={(e) => setDeputy(f.key, e.target.value)}
-                className="rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+                className={FIELD}
               />
-            </label>
+            </Field>
           ))}
         </div>
-      </fieldset>
+      </Card>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-[18px] lg:grid-cols-2">
         <EntryFields
           legend="First Report"
           entry={input.first}
@@ -208,58 +202,41 @@ export function PatrolReportForm() {
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={generate}
-          className="rounded-sm bg-accent px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-85"
-        >
+      <div className="flex flex-wrap gap-2.5">
+        <button type="button" onClick={generate} className={BTN_GOLD}>
           Generate
         </button>
-        <button
-          type="button"
-          onClick={copy}
-          disabled={!output}
-          className="rounded-sm border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-accent disabled:opacity-40"
-        >
-          {copied ? "Copied" : "Copy"}
+        <button type="button" onClick={copy} disabled={!output} className={BTN_OUTLINE}>
+          {copied ? "Copied!" : "Copy BBCode"}
         </button>
-        <button
-          type="button"
-          onClick={clear}
-          className="rounded-sm border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-danger hover:text-danger"
-        >
+        <button type="button" onClick={clear} className={BTN_DANGER}>
           Clear
         </button>
       </div>
 
-      <label className="grid gap-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          BBCode output
-        </span>
-        <textarea
-          readOnly
-          rows={12}
-          value={output}
-          placeholder="Output will appear here..."
-          className="resize-y rounded-sm border border-border bg-bg px-3 py-2.5 font-mono text-[12px] leading-relaxed text-text-dim placeholder:text-text-faint focus:border-accent focus:outline-none"
-        />
-      </label>
+      <Card accent="mint">
+        <CardTitle tag={output ? "BBCode" : "empty"}>Generated Output</CardTitle>
+        {output ? (
+          <OutputBox>{output}</OutputBox>
+        ) : (
+          <p className="text-[12.5px] text-text-faint">
+            Isi form di atas lalu tekan Generate — BBCode muncul di sini.
+          </p>
+        )}
+      </Card>
 
-      <div className="grid gap-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          Preview
-        </span>
+      <Card>
+        <CardTitle tag="live">Preview</CardTitle>
         {/*
           The one place generated HTML is injected. `bbToHtml` renders the
           deputy's own form input back to their own browser — the same trust
           model as the original build. Never extend this to lib/data.ts content.
         */}
         <div
-          className="report-preview min-h-[44px] rounded border border-border bg-surface px-4 py-3.5"
+          className="report-preview min-h-[44px] rounded-md border border-border bg-surface-2 px-4 py-3.5"
           dangerouslySetInnerHTML={{ __html: preview }}
         />
-      </div>
+      </Card>
     </div>
   );
 }
