@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { ArrowUp, SearchX } from "lucide-react";
 
 import { buildSearchIndex, matchSections } from "@/lib/search";
 import type { NavGroup, Section } from "@/lib/types";
@@ -265,9 +266,12 @@ export function Shell({ sections }: { sections: Section[] }) {
 
             {isSearching && visibleIds.size === 0 ? (
               <div className="py-20 text-center">
-                <div aria-hidden className="mb-3 font-mono text-3xl text-text-faint">
-                  ⌕
-                </div>
+                <SearchX
+                  aria-hidden
+                  size={30}
+                  strokeWidth={2}
+                  className="mx-auto mb-3 text-text-faint"
+                />
                 <p className="text-text-dim">
                   Tidak ada hasil untuk &ldquo;
                   <span className="font-mono text-text">{query.trim()}</span>
@@ -318,11 +322,11 @@ function BackToTop() {
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Kembali ke atas"
-      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border-strong bg-surface text-[16px] text-text transition-all duration-200 hover:border-gold hover:text-gold ${
+      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border-strong bg-surface text-text transition-all duration-200 hover:border-gold hover:text-gold ${
         shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"
       }`}
     >
-      ↑
+      <ArrowUp aria-hidden size={16} strokeWidth={2} />
     </button>
   );
 }

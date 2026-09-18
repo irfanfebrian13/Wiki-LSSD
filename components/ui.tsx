@@ -9,6 +9,23 @@
    block renderer and the client-side tools can share one definition.
    ========================================================================= */
 
+import type { LucideProps } from "lucide-react";
+
+/**
+ * Every icon that sits inline with body copy — the section badge, the callout
+ * marker, the tree and charge bullets — is drawn with these props.
+ *
+ * One optical size and one stroke weight, defined once, so the whole content
+ * column reads as a single drawn set instead of drifting a few pixels per
+ * block. `aria-hidden` because each of these decorates text that already
+ * carries the meaning.
+ */
+export const CONTENT_ICON_PROPS: LucideProps = {
+  size: 14,
+  strokeWidth: 2,
+  "aria-hidden": true,
+};
+
 /** The card: the reference's primary container. */
 export function Card({
   children,

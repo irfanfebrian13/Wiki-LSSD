@@ -1,3 +1,5 @@
+import { ChevronRight, Gavel, TriangleAlert } from "lucide-react";
+
 import { rankColor } from "@/lib/ranks";
 import type {
   DefItem,
@@ -7,7 +9,7 @@ import type {
   WeaponClass,
 } from "@/lib/types";
 
-import { Card, CardTitle, CodeChip, MicroLabel } from "./ui";
+import { Card, CardTitle, CodeChip, CONTENT_ICON_PROPS, MicroLabel } from "./ui";
 
 /* ==========================================================================
    Content blocks.
@@ -54,9 +56,10 @@ export function Callout({ text }: { text: string }) {
   return (
     <div className="rounded-md border border-coral/30 bg-coral-soft px-4 py-[13px]">
       <div className="flex items-start gap-3">
-        <span aria-hidden className="mt-px shrink-0 font-mono text-sm font-bold text-coral">
-          !
-        </span>
+        <TriangleAlert
+          {...CONTENT_ICON_PROPS}
+          className="mt-0.5 shrink-0 text-coral"
+        />
         <p className="text-[13.5px] font-semibold leading-relaxed text-text">
           {text}
         </p>
@@ -269,9 +272,10 @@ export function Tree({ items }: { items: TreeNode[] }) {
       {items.map((node, i) => (
         <div key={i} className="rounded-lg border border-border bg-surface px-4 py-3.5">
           <div className="flex items-center gap-2.5 text-[14px] font-semibold text-text">
-            <span aria-hidden className="text-gold">
-              ▸
-            </span>
+            <ChevronRight
+              {...CONTENT_ICON_PROPS}
+              className="shrink-0 text-gold"
+            />
             {node.name}
           </div>
           <ul className="mt-2.5 grid gap-1.5 pl-5">
@@ -404,9 +408,10 @@ export function Penal({
       <ul className="grid gap-2">
         {charges.map((charge, i) => (
           <li key={i} className="relative pl-5 text-[13.5px] leading-relaxed text-text-dim">
-            <span aria-hidden className="absolute left-0 font-bold text-gold">
-              §
-            </span>
+            <Gavel
+              {...CONTENT_ICON_PROPS}
+              className="absolute left-0 top-[3px] text-gold"
+            />
             {charge}
           </li>
         ))}

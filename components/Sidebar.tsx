@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import type { LucideProps } from "lucide-react";
 
+import { sectionIcon, groupIcon, GROUP_CHEVRONS } from "@/lib/section-icons";
 import type { NavGroup } from "@/lib/types";
 
 /** Sections worth one-tap access — the ones deputies reach for mid-shift.
     `target` is the section to scroll to; `label` identifies the chip. They are
     separate fields because two chips may point at the same section. */
 const QUICK_JUMPS = [
-  { label: "Ten Codes", target: "ten-codes" },
+  { label: "Penal Generator", target: "penal-generator" },
+  { label: "Patrol Generator", target: "patrol-report" },
+  { label: "Weapons Class", target: "senjata-illegal" },
+  { label: "10-Codes", target: "ten-codes" },
   { label: "Radio", target: "radio-basics" },
   { label: "Penal Code", target: "penal-robbery" },
-  { label: "Weapons Class", target: "senjata-illegal" },
-  { label: "Patrol Generator", target: "patrol-report" },
-  { label: "Penal Generator", target: "penal-generator" },
 ];
 
 /**
@@ -45,8 +47,30 @@ function revealInSidebar(el: HTMLElement) {
   }
 }
 
-/** The group dots: a fixed cycle so every group reads as a distinct category. */
-const GROUP_DOTS = ["bg-gold", "bg-mint", "bg-coral"];
+/**
+ * The group colours: a fixed cycle so every group reads as a distinct category.
+ * Applied to each group's icon now that the marker is drawn rather than a dot.
+ */
+const GROUP_COLORS = ["text-gold", "text-mint", "text-coral"];
+
+/**
+ * Every nav icon is drawn with these props, so the column reads as one set:
+ * one optical size, one stroke weight. Defined once here rather than per icon
+ * so the sidebar cannot drift out of alignment one entry at a time.
+ */
+const NAV_ICON_PROPS: LucideProps = {
+  size: 16,
+  strokeWidth: 2,
+  "aria-hidden": true,
+};
+
+/** The group header's icon and disclosure chevron are a touch smaller than the
+    section icons, matching the 10.5px label they sit beside. */
+const GROUP_ICON_PROPS: LucideProps = {
+  size: 13,
+  strokeWidth: 2,
+  "aria-hidden": true,
+};
 
 interface SidebarProps {
   groups: NavGroup[];
@@ -178,6 +202,10 @@ export function Sidebar({
 
           const isCollapsed = collapsed.has(group.name);
           const panelId = `${baseId}-${group.name}`;
+          const GroupIcon = groupIcon(group.name);
+          const Chevron = isCollapsed
+            ? GROUP_CHEVRONS.collapsed
+            : GROUP_CHEVRONS.expanded;
 
           return (
             <div key={group.name} className="mt-4 first:mt-0">
@@ -188,19 +216,18 @@ export function Sidebar({
                 aria-controls={panelId}
                 className="mb-1.5 flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em] text-text-faint transition-colors hover:text-text-dim"
               >
-                <span
-                  aria-hidden
-                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${GROUP_DOTS[gi % GROUP_DOTS.length]}`}
+                <GroupIcon
+                  {...GROUP_ICON_PROPS}
+                  className={`shrink-0 ${GROUP_COLORS[gi % GROUP_COLORS.length]}`}
                 />
                 {group.name}
-                <span aria-hidden className="ml-auto text-[9px]">
-                  {isCollapsed ? "▸" : "▾"}
-                </span>
+                <Chevron {...GROUP_ICON_PROPS} className="ml-auto shrink-0" />
               </button>
 
-              <ul id={panelId} hidden={isCollapsed} className="grid gap-px">
+              <ul id={panelId} hidden={isCollapsed} className="flex flex-col gap-px">
                 {items.map((section) => {
                   const active = section.id === activeId;
+                  const Icon = sectionIcon(section.id);
                   return (
                     <li key={section.id}>
                       <a
@@ -208,21 +235,22 @@ export function Sidebar({
                         data-nav-id={section.id}
                         aria-current={active ? "true" : undefined}
                         onClick={() => navigateTo(section.id)}
-                        className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-[9px] text-[13.5px] font-medium transition-colors ${
+                        className={`flex w-full min-w-0 items-center gap-2.5 rounded-sm px-3 py-[9px] text-[13.5px] font-medium transition-colors ${
                           active
                             ? "bg-gold-soft font-semibold text-gold"
                             : "text-text-dim hover:bg-surface-2 hover:text-text"
                         }`}
                       >
                         <span
-                          aria-hidden
-                          className={`w-4 shrink-0 text-center text-[12px] ${
+                          className={`grid w-4 shrink-0 place-items-center ${
                             active ? "text-gold" : "opacity-70"
                           }`}
                         >
-                          {section.icon}
+                          <Icon {...NAV_ICON_PROPS} />
                         </span>
-                        <span className="truncate">{section.title}</span>
+                        <span className="min-w-0">
+                          {section.title}
+                        </span>
                       </a>
                     </li>
                   );

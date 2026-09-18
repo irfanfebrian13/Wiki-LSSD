@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 const THEME_KEY = "lssd-theme";
 
@@ -51,6 +52,10 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   const label = `Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`;
 
+  // The icon shows the theme the button switches *to*, matching `label`, so the
+  // control reads the same way whether it is seen or announced.
+  const Icon = theme === "dark" ? Sun : Moon;
+
   return (
     <button
       type="button"
@@ -59,7 +64,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       title={label}
       className={`grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-colors hover:border-gold ${className}`}
     >
-      <span aria-hidden>{theme === "dark" ? "◐" : "◑"}</span>
+      <Icon aria-hidden size={16} strokeWidth={2} />
     </button>
   );
 }

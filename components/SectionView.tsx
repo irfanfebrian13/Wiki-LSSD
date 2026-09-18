@@ -1,8 +1,10 @@
 import { memo } from "react";
 
+import { sectionIcon } from "@/lib/section-icons";
 import type { Section } from "@/lib/types";
 
 import { BlockRenderer } from "./BlockRenderer";
+import { CONTENT_ICON_PROPS } from "./ui";
 
 interface SectionViewProps {
   section: Section;
@@ -25,6 +27,8 @@ export const SectionView = memo(function SectionView({
   onMount,
   index,
 }: SectionViewProps) {
+  const Icon = sectionIcon(section.id);
+
   return (
     <section
       id={section.id}
@@ -35,7 +39,7 @@ export const SectionView = memo(function SectionView({
     >
       <header className="mb-6">
         <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
-          <span aria-hidden>{section.icon}</span>
+          <Icon {...CONTENT_ICON_PROPS} />
           {section.group}
         </span>
         <h2

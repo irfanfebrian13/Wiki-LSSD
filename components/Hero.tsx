@@ -1,4 +1,6 @@
-import { BTN_GOLD, BTN_OUTLINE } from "./ui";
+import { ArrowRight, Shield } from "lucide-react";
+
+import { BTN_GOLD, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
 
 interface HeroProps {
   meta: { sections: number; tenCodes: number; groups: number };
@@ -22,7 +24,8 @@ export function Hero({ meta }: HeroProps) {
   return (
     <div className="mb-12">
       <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
-        🛡️ County of Los Santos
+        <Shield {...CONTENT_ICON_PROPS} />
+        County of Los Santos
       </span>
 
       <h1 className="font-display text-[30px] font-bold leading-[1.1] tracking-[-0.01em] text-text lg:text-[38px]">
@@ -50,10 +53,19 @@ export function Hero({ meta }: HeroProps) {
 
       <div className="mt-5 flex flex-wrap gap-2.5">
         <a href="#ten-codes" className={BTN_GOLD}>
-          Mulai Belajar →
+          Mulai Belajar
+          <ArrowRight
+            aria-hidden
+            size={16}
+            strokeWidth={2}
+            className="ml-1.5 shrink-0"
+          />
         </a>
         <a href="#patrol-report" className={BTN_OUTLINE}>
           Buka Report Generator
+        </a>
+        <a href="#penal-generator" className={BTN_OUTLINE}>
+          Penal Code Generator
         </a>
       </div>
     </div>
