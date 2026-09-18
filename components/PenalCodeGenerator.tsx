@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import {
   computePenalCode,
   countCharges,
+  describeCharge,
   EMPTY_PENAL_INPUT,
   formatPenalCode,
   type PenalInput,
@@ -18,7 +19,9 @@ import { BTN_GOLD, BTN_MINT, Card, CardTitle, CheckField, FIELD, Field } from ".
  * Every threshold and charge name lives in `lib/penal.ts`, which is pinned by
  * `lib/penal.test.ts` and matches the static Penal Code sections in
  * `lib/data.ts`. This file is presentation only — it holds form state and hands
- * it to `computePenalCode`.
+ * it to `computePenalCode`. The per-charge explanations come from
+ * `describeCharge` in the same module, so the preview says what a charge means
+ * without this file restating any of it.
  *
  * The category numbering (1–8) matches the reference's card tags and is part of
  * how the tool reads, not decoration.
@@ -254,6 +257,11 @@ export function PenalCodeGenerator() {
                 checked={input.manufacturing}
                 onChange={(v) => set("manufacturing", v)}
               />
+              <CheckField
+                label="Menjual / menawarkan untuk menjual narkotika"
+                checked={input.drugSelling}
+                onChange={(v) => set("drugSelling", v)}
+              />
             </div>
           </Card>
 
@@ -312,18 +320,28 @@ export function PenalCodeGenerator() {
                   {group.group}
                 </div>
                 <ul className="grid gap-1.5">
-                  {group.items.map((item) => (
-                    <li
-                      key={item.name}
-                      className="flex items-center gap-2 rounded-sm border border-border bg-surface-2 px-3 py-2 text-[13px] text-text"
-                    >
-                      <span
-                        aria-hidden
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-coral"
-                      />
-                      {item.name}
-                    </li>
-                  ))}
+                  {group.items.map((item) => {
+                    const description = describeCharge(item.name);
+                    return (
+                      <li
+                        key={item.name}
+                        className="rounded-sm border border-border bg-surface-2 px-3 py-2 text-[13px] text-text"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            aria-hidden
+                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-coral"
+                          />
+                          {item.name}
+                        </div>
+                        {description ? (
+                          <p className="mt-1 pl-3.5 text-[12px] leading-snug text-text-faint">
+                            {description}
+                          </p>
+                        ) : null}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}

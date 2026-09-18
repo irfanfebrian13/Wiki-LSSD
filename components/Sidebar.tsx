@@ -13,6 +13,7 @@ const QUICK_JUMPS = [
   { label: "Penal Code", target: "penal-robbery" },
   { label: "Weapons Class", target: "senjata-illegal" },
   { label: "Patrol Generator", target: "patrol-report" },
+  { label: "Penal Generator", target: "penal-generator" },
 ];
 
 /**

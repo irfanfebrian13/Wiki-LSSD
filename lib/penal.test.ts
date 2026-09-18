@@ -2,12 +2,16 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  CHARGE_DESCRIPTIONS,
   computePenalCode,
   countCharges,
+  describeCharge,
   EMPTY_PENAL_INPUT,
   formatPenalCode,
+  normalizeChargeName,
   type PenalInput,
 } from "./penal.ts";
+import { POCKETBOOK } from "./data.ts";
 
 /** The empty form plus the given overrides. */
 function input(overrides: Partial<PenalInput> = {}): PenalInput {
@@ -215,6 +219,86 @@ test("formatted output groups charges under a heading", () => {
   const groups = computePenalCode(input({ nosUsage: true, hackingDevice: true }));
   assert.equal(
     formatPenalCode(groups),
-    "Traffic:\n- Use of Nitrous Oxide\n\nLainnya:\n- Possession of Unauthorized Device (Hacking Device)",
+    "Traffic:\n- Use of Nitrous Oxide — mengaktifkan atau menggunakan sistem injeksi Nitrous Oxide (NOS) pada kendaraan secara ilegal saat kendaraan beroperasi/dikemudikan." +
+      "\n\nLainnya:\n- Possession of Unauthorized Device (Hacking Device) — membawa lockpick atau kartu seperti green card.",
   );
+});
+
+test("drug selling is a standalone narcotics charge", () => {
+  assert.deepEqual(
+    charges(computePenalCode(input({ drugSelling: true })), "Narcotics"),
+    ["Drugs Selling"],
+  );
+  assert.deepEqual(charges(computePenalCode(input()), "Narcotics"), []);
+});
+
+test("drug selling stacks with the weight-based narcotics charges", () => {
+  const narc = charges(
+    computePenalCode(input({ drugSelling: true, sched1: 5000 })),
+    "Narcotics",
+  );
+  assert.ok(narc.includes("Drugs Selling"));
+  assert.ok(narc.includes("Drug Trafficking"));
+});
+
+/* ---------- Charge descriptions ---------- */
+
+test("describeCharge folds class variants onto the reference entry", () => {
+  // The generator emits a class number; the reference writes the whole range.
+  assert.equal(
+    describeCharge("Criminal Possession of a Firearm [Class 2]"),
+    describeCharge("Criminal Possession of a Firearm [Class 3]"),
+  );
+  assert.equal(
+    describeCharge("Possession of Drug Paraphernalia (Class B)"),
+    describeCharge("Possession of Drug Paraphernalia (Class A)"),
+  );
+});
+
+test("charges with no reference explanation describe as undefined", () => {
+  // Robbery and Kekerasan live in example blocks, not explanatory bullets.
+  for (const name of [
+    "Hostages (1-2 sandera)",
+    "Aggravated Hostages (3-4 sandera)",
+    "Possession of Stolen Goods",
+    "Reckless Evading to Peace Officer / Reckless Driving",
+    "Grand Larceny Public Bank (Fleeca Robbery)",
+    "Gang Related Shooting (Gang War)",
+    "Disturbing the Peace",
+    "Assault with Deadly Weapon to Government Employee",
+  ]) {
+    assert.equal(describeCharge(name), undefined, `${name} should have no description`);
+  }
+});
+
+test("the description map is drawn from the Penal Code reference in data.ts", () => {
+  // Every bullet in the penal-* sections is "Charge Name — explanation".
+  const reference = new Map<string, string>();
+  for (const section of POCKETBOOK.sections) {
+    if (!section.id.startsWith("penal-") || section.id === "penal-generator") continue;
+    for (const block of section.blocks) {
+      if (block.type !== "bullets") continue;
+      for (const item of block.items) {
+        const at = item.indexOf(" — ");
+        if (at > 0) reference.set(item.slice(0, at), item.slice(at + 3));
+      }
+    }
+  }
+
+  assert.ok(reference.size > 0, "expected the penal sections to carry explanations");
+  assert.equal(reference.get("Drugs Selling"), CHARGE_DESCRIPTIONS["Drugs Selling"]);
+
+  // Every description we show must still be findable on a reference page, so a
+  // charge cannot explain itself with wording the department never published.
+  for (const [name, description] of Object.entries(CHARGE_DESCRIPTIONS)) {
+    const bullet = [...reference.entries()].find(
+      ([refName]) => normalizeChargeName(refName) === name,
+    );
+    assert.ok(bullet, `no reference bullet matches the description key "${name}"`);
+    assert.equal(
+      bullet[1],
+      description,
+      `the description for "${name}" has drifted from its reference bullet`,
+    );
+  }
 });

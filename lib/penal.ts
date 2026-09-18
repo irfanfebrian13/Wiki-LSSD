@@ -7,6 +7,10 @@
  * source as the static Penal Code sections in `lib/data.ts`. The two must agree:
  * if a threshold moves here it has moved on the reference pages too.
  *
+ * One deliberate departure from that port: `Drugs Selling` is a charge added
+ * later (it is in the `penal-narcotics` reference section but not in the legacy
+ * HTML), so it is the single entry below with no counterpart in the old build.
+ *
  * `lib/penal.test.ts` pins every boundary. Do not "tidy" the else-if chains —
  * several thresholds are inclusive at one end only, and that is deliberate.
  * ─────────────────────────────────────────────────────────────────────────────
@@ -37,6 +41,8 @@ export interface PenalInput {
   paraphernalia: number;
   poppy: number;
   manufacturing: boolean;
+  /** Selling or offering to sell a controlled substance. */
+  drugSelling: boolean;
 
   nosPossession: boolean;
   nosUsage: boolean;
@@ -76,6 +82,7 @@ export const EMPTY_PENAL_INPUT: PenalInput = {
   paraphernalia: 0,
   poppy: 0,
   manufacturing: false,
+  drugSelling: false,
 
   nosPossession: false,
   nosUsage: false,
@@ -98,6 +105,130 @@ const PROPERTY_LABELS: Record<Exclude<PenalInput["property"], "none">, string> =
   vandalismGov: "Vandalism on Government Property",
   destructionGov: "Destruction of Government Property",
 };
+
+/**
+ * The explanation shown for a charge, keyed by the charge name.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * These are lifted verbatim from the Penal Code reference sections in
+ * `lib/data.ts` (the `bullets` blocks under `penal-*`). The reference is the
+ * source of truth: `lib/penal.test.ts` asserts that every entry here still
+ * appears there, so a description cannot drift from the page it explains.
+ *
+ * Charges with no standalone explanation on the reference pages — the Robbery
+ * and Kekerasan example blocks — are deliberately absent. `describeCharge`
+ * returns `undefined` for them and the UI shows the charge name alone rather
+ * than inventing prose the department never wrote.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+export const CHARGE_DESCRIPTIONS: Record<string, string> = {
+  /* Properti */
+  Vandalism:
+    "perusakan ringan (minor physical damage) atau pengotoran properti milik orang lain/publik (contoh: corat-coret/graffiti, menggores, atau merusak fasilitas pribadi/publik).",
+  "Vandalism on Government Property":
+    "perusakan ringan (minor physical damage) atau pengotoran yang secara spesifik dilakukan terhadap properti milik Pemerintah/Negara.",
+  "Destruction of Government Property":
+    "merusak, merobohkan, atau menghancurkan fasilitas/properti milik pemerintah secara sengaja dengan skala kerusakan mayor (besar).",
+
+  /* Senjata Api */
+  "Criminal Use of a Firearm": "jika kedapatan positif menggunakan senjata.",
+  "Criminal Possession of a Firearm [Class 1/2/3]":
+    "membawa senjata ilegal sesuai class.",
+  "Possession of Unlicensed Firearm [Class 1]":
+    "membawa Pistol/Handgun gunstore tanpa lisensi.",
+  "Possession of Unlicensed Firearm [Class 2]":
+    "membawa Shotgun/Rifle gunstore tanpa lisensi.",
+  "Usage of Suppressor":
+    "dengan sengaja menggunakan, memasang (attach), melengkapi (equip), ataupun menembakkan senjata api yang telah terpasang Suppressor, tanpa kewenangan atau otorisasi yang sah.",
+
+  /* Amunisi & Vest */
+  "Unlawful Possession of Ammunition":
+    "membawa < 300 butir (jenis apapun, total < 300).",
+  "Illegal Distribution of Ammunition": "membawa > 300 dan < 2000 butir.",
+  "Ammunition Smuggling (Court Verdict)": "membawa > 2000 butir.",
+  "Misdemeanor Possession of Bulletproof Vest": "membawa < 10 vest.",
+  "Felony Possession of Bulletproof Vest (Court Verdict)":
+    "membawa 10 atau lebih vest.",
+
+  /* Narcotics */
+  "Misdemeanor Possession of Schedule I":
+    "weed bag dam opium bag < 60 gram.",
+  "Felony Possession of Schedule I": "weed bag dan opium bag > 60 gram.",
+  "Misdemeanor Possession of Schedule II":
+    "meth bag dan cocaine < 100 gram.",
+  "Felony Possession of Schedule II": "meth bag dan cocaine > 100 gram.",
+  "Distribute of a Schedule Category":
+    "kedua jenis narcotics total > 800 gram.",
+  "Drug Smuggling": "kedua jenis narcotics total > 2000 gram.",
+  "Drug Trafficking": "kedua jenis narcotics total > 4000 gram.",
+  "Drugs Selling":
+    "setiap orang yang menjual atau menawarkan untuk menjual suatu zat yang diawasi kepada orang lain, serta memiliki zat yang diawasi tersebut, dinyatakan bersalah melakukan tindak pidana penjualan narkoba.",
+  "Possession of Drug Paraphernalia":
+    "alat produksi (A < 10, B > 10): Meth Oven, Meth Table, Bagging Table, Baggy, Planting Pot, Cannabis Seed, Weed, Phos, Pseudo, Acid, Liquid Meth, Meth.",
+  "Drug Manufacturing":
+    "melakukan proses produksi kedua jenis schedule controlled substances.",
+  "Unlawful Possession of Poppy":
+    "kepemilikan 101 kg – 200 kg Poppy tanpa izin yang sah.",
+  "Felony Possession of Poppy":
+    "kepemilikan 201 kg – 300 kg Poppy tanpa izin yang sah.",
+  "Aggravated Possession of Poppy (Court Verdict)":
+    "kepemilikan 301 kg atau lebih tanpa izin yang sah.",
+
+  /* Traffic */
+  "Possession of Nitrous Oxide":
+    "menguasai, membawa, atau menyimpan tabung Nitrous Oxide (NOS) yang diperuntukkan bagi peningkatan performa kendaraan tanpa izin sah (authorization).",
+  "Use of Nitrous Oxide":
+    "mengaktifkan atau menggunakan sistem injeksi Nitrous Oxide (NOS) pada kendaraan secara ilegal saat kendaraan beroperasi/dikemudikan.",
+  "Failure to Use Required Safety Equipment (Ticket Only)":
+    "mengemudikan atau menumpang kendaraan bermotor di jalan umum tanpa menggunakan perlengkapan keselamatan yang diwajibkan oleh hukum (termasuk namun tidak terbatas pada Helm dan/atau Sabuk Pengaman / Seat Belt).",
+
+  /* Lainnya */
+  "Possession of Unauthorized Device (Hacking Device)":
+    "membawa lockpick atau kartu seperti green card.",
+  "Minor Possession of Illegal Money": "uang merah < 50.000.",
+  "Third Degree Possession of Illegal Money": "uang merah < 149.999.",
+  "Second Degree Possession of Illegal Money": "uang merah < 399.999.",
+  "First Degree Possession of Illegal Money (Court Verdict)":
+    "uang merah > 400.000.",
+};
+
+/**
+ * Charge names the generator spells differently from the reference bullet that
+ * documents them, mapped onto that bullet's exact name.
+ *
+ * Three cases, each because the reference lists the variants in one bullet:
+ *   - the Kekerasan (gang war) branch drops the article from "Criminal Use of
+ *     a Firearm";
+ *   - "Criminal Possession of a Firearm" is one bullet covering `[Class 1/2/3]`;
+ *   - "Possession of Drug Paraphernalia" is one bullet covering classes A and B.
+ *
+ * `Possession of Unlicensed Firearm [Class 1]` and `[Class 2]` are absent
+ * deliberately — the reference documents those as two separate bullets with two
+ * separate explanations, so they are map keys in their own right.
+ */
+const CHARGE_ALIASES: Record<string, string> = {
+  "Criminal Use of Firearm": "Criminal Use of a Firearm",
+  "Criminal Possession of a Firearm [Class 1]": "Criminal Possession of a Firearm [Class 1/2/3]",
+  "Criminal Possession of a Firearm [Class 2]": "Criminal Possession of a Firearm [Class 1/2/3]",
+  "Criminal Possession of a Firearm [Class 3]": "Criminal Possession of a Firearm [Class 1/2/3]",
+  "Possession of Drug Paraphernalia (Class A)": "Possession of Drug Paraphernalia",
+  "Possession of Drug Paraphernalia (Class B)": "Possession of Drug Paraphernalia",
+};
+
+/**
+ * Maps a generated charge name onto its reference bullet's name.
+ *
+ * Exported so `lib/penal.test.ts` can check every description against the
+ * reference page without restating the alias table and letting the two drift.
+ */
+export function normalizeChargeName(name: string): string {
+  return CHARGE_ALIASES[name] ?? name;
+}
+
+/** The reference's explanation for a charge, or `undefined` when it has none. */
+export function describeCharge(name: string): string | undefined {
+  return CHARGE_DESCRIPTIONS[normalizeChargeName(name)];
+}
 
 /** Charges grouped by category, in the order the categories are declared. */
 export function computePenalCode(input: PenalInput): PenalGroup[] {
@@ -176,6 +307,7 @@ export function computePenalCode(input: PenalInput): PenalGroup[] {
   if (totalNarc > 800) add("Narcotics", "Distribute of a Schedule Category");
   if (totalNarc > 2000) add("Narcotics", "Drug Smuggling");
   if (totalNarc > 4000) add("Narcotics", "Drug Trafficking");
+  if (input.drugSelling) add("Narcotics", "Drugs Selling");
 
   const { paraphernalia: para } = input;
   if (para > 0)
@@ -220,9 +352,21 @@ export function countCharges(groups: PenalGroup[]): number {
   return groups.reduce((n, g) => n + g.items.length, 0);
 }
 
+/**
+ * One charge as a clipboard line.
+ *
+ * `- Name — explanation` when the reference carries one, `- Name` otherwise.
+ * The em-dash form mirrors how the Penal Code pages themselves list a charge,
+ * so a deputy reading the pasted list sees the same shape as the page.
+ */
+function formatChargeLine(item: { name: string }): string {
+  const description = describeCharge(item.name);
+  return description ? `- ${item.name} — ${description}` : `- ${item.name}`;
+}
+
 /** The plain-text list the Copy button puts on the clipboard. */
 export function formatPenalCode(groups: PenalGroup[]): string {
   return groups
-    .map((g) => `${g.group}:\n` + g.items.map((i) => `- ${i.name}`).join("\n"))
+    .map((g) => `${g.group}:\n` + g.items.map(formatChargeLine).join("\n"))
     .join("\n\n");
 }
