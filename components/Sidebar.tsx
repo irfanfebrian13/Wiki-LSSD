@@ -64,7 +64,11 @@ export function Sidebar({
   onNavigate,
   searchInputRef,
 }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => {
+    const collapsedSet = new Set<string>();
+    groups.forEach(group => collapsedSet.add(group.name));
+    return collapsedSet;
+  });
   /* `tick` makes every click a distinct value, so re-clicking the same chip
      still re-runs the reveal effect. */
   const [reveal, setReveal] = useState<{ id: string; tick: number } | null>(null);
