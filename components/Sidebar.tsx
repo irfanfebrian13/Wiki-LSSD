@@ -140,11 +140,11 @@ export function Sidebar({
           placeholder="Cari… (mis. 10-4, miranda)"
           aria-label="Cari di pocketbook"
           autoComplete="off"
-          className="w-full border border-border bg-surface py-2 pl-3 pr-11 text-[13.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+          className="w-full rounded-sm border border-border bg-surface py-2 pl-3 pr-11 text-[13.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
         />
         <kbd
           aria-hidden
-          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 border border-border bg-surface-2 px-1.5 py-px font-mono text-[10px] text-text-faint"
+          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm border border-border bg-surface-2 px-1.5 py-px font-mono text-[10px] text-text-faint"
         >
           /
         </kbd>
@@ -157,7 +157,7 @@ export function Sidebar({
               key={jump.label}
               href={`#${jump.target}`}
               onClick={() => navigateTo(jump.target)}
-              className="border border-border bg-surface px-2.5 py-1 font-mono text-[11px] font-medium text-text-dim transition-colors hover:border-accent hover:text-accent"
+              className="rounded-sm border border-border bg-surface px-2.5 py-1 font-mono text-[11px] font-medium text-text-dim transition-colors hover:border-accent hover:text-accent"
             >
               {jump.label}
             </a>
@@ -198,7 +198,7 @@ export function Sidebar({
                         data-nav-id={section.id}
                         aria-current={active ? "true" : undefined}
                         onClick={() => navigateTo(section.id)}
-                        className={`flex items-center gap-2.5 border-l-2 px-2.5 py-1.5 text-[13px] transition-colors ${
+                        className={`flex items-center gap-2.5 rounded-sm border-l-2 px-2.5 py-1.5 text-[13px] transition-colors ${
                           active
                             ? "border-l-accent bg-accent-soft font-medium text-text"
                             : "border-l-transparent text-text-dim hover:bg-surface hover:text-text"

@@ -55,7 +55,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={`Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`}
       title={`Ganti ke tema ${theme === "dark" ? "terang" : "gelap"}`}
-      className={`border border-border bg-surface px-2 py-1 font-mono text-[13px] leading-none text-text-dim transition-colors hover:border-accent hover:text-accent ${className}`}
+      className={`rounded-sm border border-border bg-surface px-2 py-1 font-mono text-[13px] leading-none text-text-dim transition-colors hover:border-accent hover:text-accent ${className}`}
     >
       <span aria-hidden>{theme === "dark" ? "◐" : "◑"}</span>
     </button>

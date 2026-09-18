@@ -192,7 +192,7 @@ export function Shell({ sections }: { sections: Section[] }) {
     <>
       <a
         href="#content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:border focus:border-accent focus:bg-surface focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-text"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-sm focus:border focus:border-accent focus:bg-surface focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-text"
       >
         Lompat ke konten
       </a>
@@ -205,7 +205,7 @@ export function Shell({ sections }: { sections: Section[] }) {
           aria-expanded={drawerOpen}
           aria-controls="sidebar"
           aria-label="Buka navigasi"
-          className="flex flex-col gap-1 border border-border bg-surface p-2"
+          className="flex flex-col gap-1 rounded-sm border border-border bg-surface p-2"
         >
           <span className="block h-px w-4 bg-text" />
           <span className="block h-px w-4 bg-text" />
@@ -311,7 +311,7 @@ function BackToTop() {
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Kembali ke atas"
-      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center border border-border bg-surface text-[16px] text-text transition-all duration-200 hover:border-accent hover:text-accent ${
+      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface text-[16px] text-text transition-all duration-200 hover:border-accent hover:text-accent ${
         shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"
       }`}
     >

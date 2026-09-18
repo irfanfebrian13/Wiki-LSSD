@@ -11,7 +11,7 @@ export function Hero({ meta }: HeroProps) {
 
   return (
     <div className="mb-10">
-      <span className="inline-block border border-accent/35 bg-accent-soft px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
+      <span className="inline-block rounded-sm border border-accent/35 bg-accent-soft px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
         LSSD · Internal
       </span>
 

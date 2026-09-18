@@ -41,8 +41,11 @@
   --danger: #e5484d;
   --danger-soft: rgba(229, 72, 77, 0.13);
 
-  --radius: 4px;
-  --radius-sm: 3px;
+  /* Corner radius. Kept modest — this is an MDT, not a phone app — but large
+     enough that every bordered box reads as deliberately rounded rather than
+     as a hairline that missed a pixel. */
+  --radius: 8px;
+  --radius-sm: 6px;
 
   --font: var(--font-archivo), system-ui, sans-serif;
   --mono: var(--font-plex-mono), ui-monospace, monospace;
@@ -93,7 +96,12 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
 
-  --radius-DEFAULT: var(--radius);
+  /* The key here must be exactly `--radius`: that is the theme namespace
+     Tailwind's bare `.rounded` reads. (A `--radius-DEFAULT` alias is inert —
+     it maps nothing, and `.rounded` silently falls back to the built-in
+     0.25rem.) The self-reference is safe: this layered declaration loses to
+     the unlayered `:root` above, which supplies the literal value. */
+  --radius: var(--radius);
   --radius-sm: var(--radius-sm);
 
   --font-sans: var(--font);
@@ -158,7 +166,7 @@
   ::-webkit-scrollbar-thumb {
     background: var(--border);
     border: 2px solid var(--bg);
-    border-radius: 0;
+    border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-faint);

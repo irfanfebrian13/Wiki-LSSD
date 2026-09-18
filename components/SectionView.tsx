@@ -35,7 +35,7 @@ export const SectionView = memo(function SectionView({
       <div className="mb-5 flex items-center gap-3.5 border-b border-border pb-3.5">
         <span
           aria-hidden
-          className="grid h-9 w-9 shrink-0 place-items-center border border-border bg-surface text-[15px] text-accent"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded border border-border bg-surface text-[15px] text-accent"
         >
           {section.icon}
         </span>

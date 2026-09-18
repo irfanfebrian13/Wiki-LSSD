@@ -57,7 +57,7 @@ export function RadioCall({
   };
 
   return (
-    <div className="border border-border bg-surface px-5 py-4">
+    <div className="rounded border border-border bg-surface px-5 py-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <h4 className="text-[15px] font-semibold leading-snug text-text">
           {title}
@@ -66,7 +66,7 @@ export function RadioCall({
           type="button"
           onClick={copy}
           aria-label={`Copy radio call: ${title}`}
-          className="shrink-0 border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-dim transition-colors hover:border-accent hover:text-accent"
+          className="shrink-0 rounded-sm border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-dim transition-colors hover:border-accent hover:text-accent"
         >
           {copied ? "Copied" : "Copy"}
         </button>
@@ -102,7 +102,7 @@ function Phrase({
   return (
     <div className="flex items-start gap-3">
       <span
-        className={`mt-px shrink-0 px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+        className={`mt-px shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-bold ${
           primary
             ? "bg-accent-soft text-accent"
             : "bg-accent-2-soft text-accent-2"
@@ -113,7 +113,7 @@ function Phrase({
       <p
         className={
           primary
-            ? "whitespace-pre-wrap border-l-2 border-l-accent bg-bg px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-text"
+            ? "whitespace-pre-wrap rounded-sm border-l-2 border-l-accent bg-bg px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-text"
             : "whitespace-pre-wrap py-1 text-[13px] leading-relaxed text-text-dim"
         }
       >

@@ -29,7 +29,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <div className={`border border-border bg-surface ${className}`}>{children}</div>
+    <div className={`rounded border border-border bg-surface ${className}`}>{children}</div>
   );
 }
 
@@ -73,7 +73,7 @@ export function TitledCard({
 
 export function Callout({ text }: { text: string }) {
   return (
-    <div className="border border-accent-2/40 bg-accent-2-soft px-5 py-4">
+    <div className="rounded border border-accent-2/40 bg-accent-2-soft px-5 py-4">
       <div className="flex items-start gap-3">
         <span
           aria-hidden
@@ -118,7 +118,7 @@ export function Bullets({
             <li key={i} className="flex gap-3">
               <span
                 aria-hidden
-                className="mt-[9px] h-[5px] w-[5px] shrink-0 bg-accent"
+                className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-accent"
               />
               <span className="text-[14.5px] leading-relaxed text-text-dim">
                 {item}
@@ -137,10 +137,10 @@ export function Steps({ title, items }: { title?: string; items: string[] }) {
       {title ? <MicroLabel>{title}</MicroLabel> : null}
       <ol className="grid gap-2">
         {items.map((item, i) => (
-          <li key={i} className="flex gap-3.5 border border-border bg-surface px-4 py-3">
+          <li key={i} className="flex gap-3.5 rounded border border-border bg-surface px-4 py-3">
             <span
               aria-hidden
-              className="grid h-6 w-6 shrink-0 place-items-center bg-accent-soft font-mono text-[11px] font-bold text-accent"
+              className="grid h-6 w-6 shrink-0 place-items-center rounded-sm bg-accent-soft font-mono text-[11px] font-bold text-accent"
             >
               {i + 1}
             </span>
@@ -170,7 +170,7 @@ export function Table({
   return (
     <div>
       {title ? <MicroLabel>{title}</MicroLabel> : null}
-      <div className="overflow-x-auto border border-border">
+      <div className="overflow-x-auto rounded border border-border">
         <table className="w-full border-collapse text-[13.5px]">
           <thead>
             <tr>
@@ -217,7 +217,7 @@ export function DefList({ title, items }: { title?: string; items: DefItem[] }) 
         {items.map((item, i) => (
           <div
             key={i}
-            className="grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 border border-border bg-surface px-4 py-3"
+            className="grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded border border-border bg-surface px-4 py-3"
             style={
               item.color ? { borderLeftWidth: 2, borderLeftColor: item.color } : undefined
             }
@@ -244,7 +244,7 @@ export function Ranks({ items }: { items: string[] }) {
       {items.map((rank, i) => (
         <li
           key={i}
-          className="group flex items-center gap-3.5 border border-border bg-surface px-4 py-2.5 transition-transform hover:translate-x-1"
+          className="group flex items-center gap-3.5 rounded border border-border bg-surface px-4 py-2.5 transition-transform hover:translate-x-1"
         >
           <span
             aria-hidden
@@ -270,10 +270,10 @@ export function Legend({ title, items }: { title: string; items: LegendItem[] })
       <MicroLabel>{title}</MicroLabel>
       <div className="grid gap-2">
         {items.map((item, i) => (
-          <div key={i} className="flex items-start gap-3 border border-border bg-surface px-4 py-2.5">
+          <div key={i} className="flex items-start gap-3 rounded border border-border bg-surface px-4 py-2.5">
             <span
               aria-hidden
-              className="mt-[5px] h-3.5 w-3.5 shrink-0"
+              className="mt-[5px] h-3.5 w-3.5 shrink-0 rounded-sm"
               style={{ background: item.color }}
             />
             <div className="text-[14px]">
@@ -291,7 +291,7 @@ export function Tree({ items }: { items: TreeNode[] }) {
   return (
     <div className="grid gap-3">
       {items.map((node, i) => (
-        <div key={i} className="border border-border bg-surface px-4 py-3.5">
+        <div key={i} className="rounded border border-border bg-surface px-4 py-3.5">
           <div className="flex items-center gap-2.5 text-[14px] font-semibold text-text">
             <span aria-hidden className="text-accent">
               ▸
@@ -327,7 +327,7 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
       {title ? <MicroLabel>{title}</MicroLabel> : null}
       <div className="grid gap-4 lg:grid-cols-2">
         {tracks.map((track, t) => (
-          <div key={t} className="border border-border bg-surface px-4 py-3.5">
+          <div key={t} className="rounded border border-border bg-surface px-4 py-3.5">
             <h4 className="mb-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
               {track.title}
             </h4>
@@ -335,7 +335,7 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
             <ol className="grid gap-0">
               {track.steps.map((step, s) => (
                 <li key={s}>
-                  <div className="flex items-center gap-2.5 border border-border-soft bg-bg px-3 py-2">
+                  <div className="flex items-center gap-2.5 rounded-sm border border-border-soft bg-bg px-3 py-2">
                     <span
                       aria-hidden
                       className="w-4 shrink-0 text-center font-mono text-[11px] text-text-faint"
@@ -352,7 +352,7 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
                       {step.branches.map((branch, b) => (
                         <div
                           key={b}
-                          className={`border-l-2 px-3 py-2 font-mono text-[11.5px] leading-relaxed ${
+                          className={`rounded-sm border-l-2 px-3 py-2 font-mono text-[11.5px] leading-relaxed ${
                             branch.tone === "ok"
                               ? "border-l-accent bg-accent-soft text-text-dim"
                               : "border-l-danger bg-danger-soft text-text-dim"
@@ -389,7 +389,7 @@ export function Weapons({
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {classes.map((cls, i) => (
-        <div key={i} className="border border-border bg-surface px-4 py-3.5">
+        <div key={i} className="rounded border border-border bg-surface px-4 py-3.5">
           <h4
             className={`mb-3 border-b border-border-soft pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] ${
               illegal ? "text-danger" : "text-accent"
@@ -428,7 +428,7 @@ export function Penal({
   return (
     <Panel className="px-5 py-4">
       <h4 className="text-[16px] font-semibold text-text">{title}</h4>
-      <span className="mt-2 mb-3.5 inline-block bg-danger-soft px-2.5 py-1 font-mono text-[12px] font-semibold text-danger">
+      <span className="mt-2 mb-3.5 inline-block rounded-sm bg-danger-soft px-2.5 py-1 font-mono text-[12px] font-semibold text-danger">
         {main}
       </span>
       <ul className="grid gap-2">

@@ -41,14 +41,14 @@ function EvidenceFields({ links, onChange }: EvidenceProps) {
               next[i] = e.target.value;
               onChange(next);
             }}
-            className="min-w-0 flex-1 border border-border bg-bg px-2.5 py-1.5 font-mono text-[12.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className="min-w-0 flex-1 rounded-sm border border-border bg-bg px-2.5 py-1.5 font-mono text-[12.5px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
           />
           {links.length > 1 ? (
             <button
               type="button"
               aria-label={`Remove evidence link ${i + 1}`}
               onClick={() => onChange(links.filter((_, k) => k !== i))}
-              className="border border-border px-2 font-mono text-xs text-text-faint transition-colors hover:border-danger hover:text-danger"
+              className="rounded-sm border border-border px-2 font-mono text-xs text-text-faint transition-colors hover:border-danger hover:text-danger"
             >
               ×
             </button>
@@ -58,7 +58,7 @@ function EvidenceFields({ links, onChange }: EvidenceProps) {
       <button
         type="button"
         onClick={() => onChange([...links, ""])}
-        className="justify-self-start border border-dashed border-border px-2.5 py-1 font-mono text-[11px] font-semibold text-accent transition-colors hover:border-accent"
+        className="justify-self-start rounded-sm border border-dashed border-border px-2.5 py-1 font-mono text-[11px] font-semibold text-accent transition-colors hover:border-accent"
       >
         + Evidence
       </button>
@@ -77,7 +77,7 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
     onChange({ ...entry, [key]: value });
 
   return (
-    <fieldset className="border border-border bg-surface px-4 py-3.5">
+    <fieldset className="rounded border border-border bg-surface px-4 py-3.5">
       <legend className="px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
         {legend}
       </legend>
@@ -91,7 +91,7 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
             value={entry.title}
             placeholder="Report title"
             onChange={(e) => set("title", e.target.value)}
-            className="border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className="rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
           />
         </label>
 
@@ -103,7 +103,7 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
             type="date"
             value={entry.date}
             onChange={(e) => set("date", e.target.value)}
-            className="border border-border bg-bg px-2.5 py-1.5 font-mono text-[13px] text-text focus:border-accent focus:outline-none"
+            className="rounded-sm border border-border bg-bg px-2.5 py-1.5 font-mono text-[13px] text-text focus:border-accent focus:outline-none"
           />
         </label>
 
@@ -116,7 +116,7 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
             value={entry.details}
             placeholder="Write details..."
             onChange={(e) => set("details", e.target.value)}
-            className="resize-y border border-border bg-bg px-2.5 py-1.5 text-[13px] leading-relaxed text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+            className="resize-y rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] leading-relaxed text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
           />
         </label>
 
@@ -174,7 +174,7 @@ export function PatrolReportForm() {
 
   return (
     <div className="grid gap-4">
-      <fieldset className="border border-border bg-surface px-4 py-3.5">
+      <fieldset className="rounded border border-border bg-surface px-4 py-3.5">
         <legend className="px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
           Deputy Information
         </legend>
@@ -188,7 +188,7 @@ export function PatrolReportForm() {
                 value={input[f.key]}
                 placeholder={f.placeholder}
                 onChange={(e) => setDeputy(f.key, e.target.value)}
-                className="border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
+                className="rounded-sm border border-border bg-bg px-2.5 py-1.5 text-[13px] text-text placeholder:text-text-faint focus:border-accent focus:outline-none"
               />
             </label>
           ))}
@@ -212,7 +212,7 @@ export function PatrolReportForm() {
         <button
           type="button"
           onClick={generate}
-          className="bg-accent px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-85"
+          className="rounded-sm bg-accent px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-85"
         >
           Generate
         </button>
@@ -220,14 +220,14 @@ export function PatrolReportForm() {
           type="button"
           onClick={copy}
           disabled={!output}
-          className="border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-accent disabled:opacity-40"
+          className="rounded-sm border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-accent disabled:opacity-40"
         >
           {copied ? "Copied" : "Copy"}
         </button>
         <button
           type="button"
           onClick={clear}
-          className="border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-danger hover:text-danger"
+          className="rounded-sm border border-border bg-surface-2 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-text transition-colors hover:border-danger hover:text-danger"
         >
           Clear
         </button>
@@ -242,7 +242,7 @@ export function PatrolReportForm() {
           rows={12}
           value={output}
           placeholder="Output will appear here..."
-          className="resize-y border border-border bg-bg px-3 py-2.5 font-mono text-[12px] leading-relaxed text-text-dim placeholder:text-text-faint focus:border-accent focus:outline-none"
+          className="resize-y rounded-sm border border-border bg-bg px-3 py-2.5 font-mono text-[12px] leading-relaxed text-text-dim placeholder:text-text-faint focus:border-accent focus:outline-none"
         />
       </label>
 
@@ -256,7 +256,7 @@ export function PatrolReportForm() {
           model as the original build. Never extend this to lib/data.ts content.
         */}
         <div
-          className="report-preview min-h-[44px] border border-border bg-surface px-4 py-3.5"
+          className="report-preview min-h-[44px] rounded border border-border bg-surface px-4 py-3.5"
           dangerouslySetInnerHTML={{ __html: preview }}
         />
       </div>
