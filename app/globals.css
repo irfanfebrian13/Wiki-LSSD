@@ -224,12 +224,31 @@
 }
 
 /* ============================================================================
-   Motion — one orchestrated page load, and a hard stop for reduced motion.
+   Motion
+
+   CSS-first. The only JS-driven motion is the nav highlight (it needs real
+   geometry) and the stat count-up (it needs rAF); everything else is a class
+   here, which keeps `prefers-reduced-motion` the single place motion is
+   switched off instead of a second, JS-side opt-out.
+
+   Durations are deliberately 100–500ms: these are micro-interactions, not
+   set pieces to sit through.
    ========================================================================= */
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-sidebar: 0.5s;
+  --dur-reveal: 0.45s;
+  --dur-highlight: 0.28s;
+  --dur-hover: 0.25s;
+}
+
 @keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -237,8 +256,94 @@
   }
 }
 
-.section-reveal {
-  animation: reveal 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+@keyframes sidebar-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar entrance — desktop only. Below `lg` this same element is the
+   off-canvas drawer, whose transform belongs to the `translate-x` utilities;
+   animating it here would fight those and could pin the drawer open. */
+@media (min-width: 1024px) {
+  .sidebar-enter {
+    animation: sidebar-in var(--dur-sidebar) var(--ease-out-expo) backwards;
+  }
+}
+
+/* Content reveal. Applied to a section's header and to each top-level block in
+   its stack, so the delays live in CSS and the server HTML already carries them
+   — no flash of un-animated content, and no JS needed for the first paint.
+
+   The ladder is clamped at 360ms: the Penal Code Generator renders eight form
+   cards, and the form must not feel slow to appear.
+
+   `backwards`, never `both`: a completed animation's fill keeps applying its
+   final keyframe, and animated values outrank normal declarations — so `both`
+   would pin `transform: translateY(0)` on every revealed element for good and
+   silently swallow the `transform`-based hover lifts below. Since this
+   keyframe's end state *is* the element's natural state, dropping the fill
+   after it finishes changes nothing visually and hands `transform` back. */
+.reveal-item,
+.reveal-stack > * {
+  animation: reveal var(--dur-reveal) var(--ease-standard) backwards;
+}
+
+.reveal-stack > *:nth-child(1) { animation-delay: 45ms; }
+.reveal-stack > *:nth-child(2) { animation-delay: 90ms; }
+.reveal-stack > *:nth-child(3) { animation-delay: 135ms; }
+.reveal-stack > *:nth-child(4) { animation-delay: 180ms; }
+.reveal-stack > *:nth-child(5) { animation-delay: 225ms; }
+.reveal-stack > *:nth-child(6) { animation-delay: 270ms; }
+.reveal-stack > *:nth-child(7) { animation-delay: 315ms; }
+.reveal-stack > *:nth-child(n + 8) { animation-delay: 360ms; }
+
+/* The nav highlight: one absolutely-positioned pill, moved by JS. Only
+   `transform` and `height` are transitioned, so it slides between entries
+   instead of popping into place. */
+.nav-pill {
+  transition:
+    transform var(--dur-highlight) var(--ease-standard),
+    height var(--dur-highlight) var(--ease-standard),
+    opacity 0.18s linear;
+}
+
+/* Card hover — lift, brighter border, soft shadow. Written longhand rather than
+   with utilities because a `border-color` utility on hover would also repaint
+   the accent top rule; these rules re-assert the accent colour instead. */
+.card-lift {
+  transition:
+    transform var(--dur-hover) var(--ease-standard),
+    border-color var(--dur-hover) var(--ease-standard),
+    box-shadow var(--dur-hover) var(--ease-standard);
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.6);
+}
+.card-lift[data-accent="gold"]:hover {
+  border-top-color: var(--gold);
+}
+.card-lift[data-accent="mint"]:hover {
+  border-top-color: var(--mint);
+}
+.card-lift[data-accent="coral"]:hover {
+  border-top-color: var(--coral);
+}
+[data-theme="light"] .card-lift:hover {
+  box-shadow: 0 10px 30px -16px rgba(12, 14, 18, 0.3);
+}
+
+/* Theme toggle: the icon turns a half-turn per switch, with a slight
+   overshoot. */
+.theme-spin {
+  transition: transform 0.4s var(--ease-overshoot);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -250,9 +355,20 @@
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    /* Also zeroed: a stagger delay of up to 360ms under a 0.01ms duration
+       would leave late items invisible (fill-mode `both`) for a third of a
+       second. */
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
   }
-  .section-reveal {
+  /* Entrance motion is pure decoration — drop it rather than run it at
+     0.01ms. */
+  .sidebar-enter,
+  .reveal-item,
+  .reveal-stack > * {
     animation: none;
+  }
+  .card-lift:hover {
+    transform: none;
   }
 }

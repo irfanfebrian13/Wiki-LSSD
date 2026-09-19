@@ -189,7 +189,10 @@ export function PatrolReportForm() {
         </div>
       </Card>
 
-      <div className="grid gap-[18px] lg:grid-cols-2">
+      {/* `reveal-stack` on both grids: the section's own stack sees each grid as
+          a single child, so the two report cards would otherwise enter together
+          rather than staggered. */}
+      <div className="reveal-stack grid gap-[18px] lg:grid-cols-2">
         <EntryFields
           legend="First Report"
           entry={input.first}

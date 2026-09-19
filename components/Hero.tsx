@@ -1,9 +1,27 @@
+"use client";
+
 import { ArrowRight, Shield } from "lucide-react";
 
+import { useCountUp } from "./motion";
 import { BTN_GOLD, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
 
 interface HeroProps {
   meta: { sections: number; tenCodes: number; groups: number };
+}
+
+/**
+ * One stat number, counted up from zero when it scrolls into view.
+ *
+ * The server renders the final value, so the number is correct before — and
+ * without — JavaScript; the count is a pure enhancement layered over it.
+ */
+function StatValue({ value }: { value: number }) {
+  const ref = useCountUp(value);
+  return (
+    <span ref={ref} className="tabular-nums">
+      {value}
+    </span>
+  );
 }
 
 /**
@@ -41,10 +59,10 @@ export function Hero({ meta }: HeroProps) {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="min-w-[120px] rounded-md border border-border bg-surface px-5 py-4"
+            className="min-w-[120px] rounded-md border border-border bg-surface px-5 py-4 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-gold"
           >
-            <div className="font-display text-[24px] font-bold leading-none text-gold">
-              {stat.value}
+            <div className="font-display text-[24px] font-bold leading-[1.1] text-gold">
+              <StatValue value={stat.value} />
             </div>
             <div className="mt-1 text-[11px] text-text-faint">{stat.label}</div>
           </div>

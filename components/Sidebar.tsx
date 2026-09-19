@@ -6,6 +6,8 @@ import type { LucideProps } from "lucide-react";
 import { sectionIcon, groupIcon, GROUP_CHEVRONS } from "@/lib/section-icons";
 import type { NavGroup } from "@/lib/types";
 
+import { useNavHighlight } from "./motion";
+
 /** Sections worth one-tap access — the ones deputies reach for mid-shift.
     `target` is the section to scroll to; `label` identifies the chip. They are
     separate fields because two chips may point at the same section. */
@@ -103,6 +105,15 @@ export function Sidebar({
   const navRef = useRef<HTMLElement>(null);
   const baseId = useId();
 
+  /* One absolutely-positioned pill slides between nav entries, rather than the
+     active background being swapped from link to link. `query` is part of the
+     key so a search that hides entries re-measures. */
+  const pillRef = useNavHighlight({
+    container: navRef,
+    activeId,
+    remeasureKey: query,
+  });
+
   const toggleGroup = (name: string) => {
     setCollapsed((prev) => {
       const next = new Set(prev);
@@ -195,7 +206,22 @@ export function Sidebar({
       ) : null}
 
       {/* Navigation */}
-      <nav ref={navRef} aria-label="Bagian pocketbook" className="flex-1 px-3 pb-4">
+      <nav
+        ref={navRef}
+        aria-label="Bagian pocketbook"
+        className="relative flex-1 px-3 pb-4"
+      >
+        {/* The sliding highlight. `aria-hidden` because it duplicates the state
+            `aria-current` already carries on the link itself. It sits behind the
+            links, which carry `z-10` and are positioned, so no link needs a
+            background of its own. */}
+        <div
+          ref={pillRef}
+          aria-hidden
+          className="nav-pill pointer-events-none absolute left-3 right-3 top-0 rounded-sm bg-gold-soft opacity-0"
+          style={{ height: 0 }}
+        />
+
         {groups.map((group, gi) => {
           const items = group.items.filter((s) => visibleIds.has(s.id));
           if (items.length === 0) return null;
@@ -235,14 +261,19 @@ export function Sidebar({
                         data-nav-id={section.id}
                         aria-current={active ? "true" : undefined}
                         onClick={() => navigateTo(section.id)}
-                        className={`flex w-full min-w-0 items-center gap-2.5 rounded-sm px-3 py-[9px] text-[13.5px] font-medium transition-colors ${
+                        /* The active background is the sliding pill behind
+                           this row, so the link itself only carries colour and
+                           weight. Hover nudges the row right and grows its icon
+                           a touch — both transitioned, and both cheap (transform
+                           and opacity only, no layout). */
+                        className={`group relative z-10 flex w-full min-w-0 items-center gap-2.5 rounded-sm px-3 py-[9px] text-[13.5px] font-medium transition-[color,transform] duration-150 hover:translate-x-0.5 ${
                           active
-                            ? "bg-gold-soft font-semibold text-gold"
-                            : "text-text-dim hover:bg-surface-2 hover:text-text"
+                            ? "font-semibold text-gold"
+                            : "text-text-dim hover:text-text"
                         }`}
                       >
                         <span
-                          className={`grid w-4 shrink-0 place-items-center ${
+                          className={`grid w-4 shrink-0 place-items-center transition-transform duration-150 group-hover:scale-110 ${
                             active ? "text-gold" : "opacity-70"
                           }`}
                         >

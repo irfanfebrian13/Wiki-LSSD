@@ -48,7 +48,10 @@ export function Card({
 
   return (
     <div
-      className={`rounded-lg border border-border bg-surface px-[26px] py-6 ${accentClass} ${className}`}
+      /* `data-accent` lets the hover rule in `globals.css` re-assert the top
+         rule's colour — a plain `hover:border-*` utility would repaint it. */
+      data-accent={accent}
+      className={`card-lift rounded-lg border border-border bg-surface px-[26px] py-6 ${accentClass} ${className}`}
     >
       {children}
     </div>
@@ -113,22 +116,26 @@ export function CodeChip({
   );
 }
 
-/** The reference's two button shapes, shared by every action in the app. */
+/* Buttons: a 2px lift on hover, a slight press on click. `transform` is in the
+   transition list so both read as motion rather than a snap, and `motion-safe`
+   keeps the lift out of the way when reduced motion is on. */
 export const BTN_GOLD =
-  "inline-flex items-center justify-center rounded-full bg-gold px-5 py-[11px] text-[13.5px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.97] disabled:opacity-40 disabled:hover:opacity-40";
+  "inline-flex items-center justify-center rounded-full bg-gold px-5 py-[11px] text-[13.5px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] motion-safe:hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40 disabled:hover:opacity-40 disabled:motion-safe:hover:translate-y-0";
 
 export const BTN_OUTLINE =
-  "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint active:scale-[0.97] disabled:opacity-40";
+  "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint motion-safe:hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40";
 
 export const BTN_MINT =
-  "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-opacity duration-150 hover:opacity-[0.85] active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] motion-safe:hover:-translate-y-0.5 active:scale-[0.97]";
 
 export const BTN_DANGER =
-  "inline-flex items-center justify-center rounded-full border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-opacity duration-150 hover:opacity-[0.85] active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-full border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-[opacity,transform] duration-150 hover:opacity-[0.85] motion-safe:hover:-translate-y-0.5 active:scale-[0.97]";
 
-/** Field styling shared by every input, select and textarea. */
+/* Fields: focus gets a soft translucent ring as well as the border colour, so
+   the active field is legible at a glance without a hard outline. The ring uses
+   the accent's own soft token, which is already theme-aware. */
 export const FIELD =
-  "w-full rounded-sm border border-border-strong bg-surface-2 px-3 py-2.5 text-[13.5px] text-text placeholder:text-text-faint transition-colors focus:border-mint focus:outline-none disabled:opacity-50";
+  "w-full rounded-sm border border-border-strong bg-surface-2 px-3 py-2.5 text-[13.5px] text-text placeholder:text-text-faint transition-[border-color,box-shadow] focus:border-mint focus:shadow-[0_0_0_3px_var(--mint-soft)] focus:outline-none disabled:opacity-50";
 
 /** A labelled form field, matching the reference's `.form-field`. */
 export function Field({

@@ -15,6 +15,14 @@ const THEME_KEY = "lssd-theme";
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
+  /* Half-turns taken so far. The transform is cumulative rather than a fixed
+     180deg so each switch rotates the same way and the transition always has a
+     changed value to animate between — remounting the icon instead would not
+     work, since a new element has no previous transform to transition from.
+     This is presentation state only; the theme itself stays owned by the
+     document attribute below. */
+  const [turns, setTurns] = useState(0);
+
   // Two instances exist in the DOM (mobile topbar, desktop fixed) and only one
   // is visible at a time. Watching the attribute keeps them in sync when the
   // viewport crosses the breakpoint, and also picks up whatever the pre-paint
@@ -37,6 +45,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   const toggle = () => {
     const next = theme === "dark" ? "light" : "dark";
+    setTurns((t) => t + 1);
     document.documentElement.setAttribute("data-theme", next);
     document
       .querySelector('meta[name="theme-color"]')
@@ -62,9 +71,18 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className={`grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-colors hover:border-gold ${className}`}
+      className={`group grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-[border-color,transform] duration-200 hover:border-gold active:scale-[0.97] ${className}`}
     >
-      <Icon aria-hidden size={16} strokeWidth={2} />
+      {/* Half a turn per switch, with an overshoot easing. Inline because the
+          angle is runtime state; the transition itself lives in `theme-spin`
+          so `prefers-reduced-motion` can switch it off in one place. */}
+      <Icon
+        aria-hidden
+        size={16}
+        strokeWidth={2}
+        className="theme-spin"
+        style={{ transform: `rotate(${turns * 180}deg)` }}
+      />
     </button>
   );
 }

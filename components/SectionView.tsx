@@ -10,8 +10,6 @@ interface SectionViewProps {
   section: Section;
   /** Registration callback so the shell can observe this section for scroll-spy. */
   onMount: (id: string, el: HTMLElement | null) => void;
-  /** 0-based position, used only to stagger the reveal animation. */
-  index: number;
 }
 
 /**
@@ -25,7 +23,6 @@ interface SectionViewProps {
 export const SectionView = memo(function SectionView({
   section,
   onMount,
-  index,
 }: SectionViewProps) {
   const Icon = sectionIcon(section.id);
 
@@ -34,10 +31,9 @@ export const SectionView = memo(function SectionView({
       id={section.id}
       ref={(el) => onMount(section.id, el)}
       aria-labelledby={`${section.id}-heading`}
-      className="section-reveal scroll-mt-[68px]"
-      style={{ animationDelay: `${Math.min(index * 0.03, 0.36)}s` }}
+      className="scroll-mt-[68px]"
     >
-      <header className="mb-6">
+      <header className="reveal-item mb-6">
         <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
           <Icon {...CONTENT_ICON_PROPS} />
           {section.group}
@@ -50,7 +46,10 @@ export const SectionView = memo(function SectionView({
         </h2>
       </header>
 
-      <div className="grid gap-[18px]">
+      {/* The stagger lives on this stack, so the delay ladder is expressed once
+          in CSS and every section — including the eight-card Penal Generator,
+          whose ladder is clamped at 360ms — is covered without per-block work. */}
+      <div className="reveal-stack grid gap-[18px]">
         {section.blocks.map((block, i) => (
           <BlockRenderer key={i} block={block} />
         ))}

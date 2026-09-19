@@ -81,8 +81,13 @@ export function PenalCodeGenerator() {
   return (
     <div className="grid gap-[18px]">
       <div className="grid items-start gap-[18px] lg:grid-cols-2">
-        {/* ---- Left column ---- */}
-        <div className="grid gap-[18px]">
+        {/* ---- Left column ----
+            `reveal-stack` so each form card enters on the shared delay ladder.
+            The section's own stack only sees this grid as one child, so without
+            this the eight cards would appear together. The ladder is clamped at
+            360ms in `globals.css`, so the last card is never more than that
+            behind the first. */}
+        <div className="reveal-stack grid gap-[18px]">
           <Card accent="gold">
             <CardTitle tag="1">Robbery</CardTitle>
             <div className="grid gap-3">
@@ -207,8 +212,8 @@ export function PenalCodeGenerator() {
           </Card>
         </div>
 
-        {/* ---- Right column ---- */}
-        <div className="grid gap-[18px]">
+        {/* ---- Right column ---- (see the left column's note) */}
+        <div className="reveal-stack grid gap-[18px]">
           <Card accent="mint">
             <CardTitle tag="5">Amunisi &amp; Vest</CardTitle>
             <div className="grid gap-3 sm:grid-cols-2">

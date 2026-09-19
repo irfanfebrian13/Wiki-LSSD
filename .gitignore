@@ -40,6 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Design reference — the standalone HTML mockup the UI was rebuilt from. Kept
+# locally for consultation only; `globals.css`, `ui.tsx` and `penal.ts` cite it
+# by name in comments, but nothing imports it, so it is not part of the build.
+lssd-wiki-modern.html
+
 # claude code local state (agents, skills and plans are machine-local tooling)
 .claude/
 # Windows marks downloaded files as `<name>:Zone.Identifier` (a colon, not a

@@ -10,6 +10,7 @@ import { Hero } from "./Hero";
 import { SectionView } from "./SectionView";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
+import { replayReveal } from "./motion";
 
 /**
  * Below this width the sidebar becomes an overlay drawer.
@@ -194,6 +195,12 @@ export function Shell({ sections }: { sections: Section[] }) {
     // Highlight immediately rather than waiting for the smooth scroll to bring
     // the section into the observer's activation band.
     setScrollActiveId(id);
+
+    /* Replay the destination's staggered entrance. This fires only on a
+       deliberate jump (nav entry, quick-jump chip, hash link) — never on
+       scroll-spy, so scrolling past a section does not re-animate it, and never
+       on a keystroke, so typing in the search box does not restart the page. */
+    replayReveal(sectionEls.current.get(id) ?? null);
   }, []);
 
   return (
@@ -237,7 +244,7 @@ export function Shell({ sections }: { sections: Section[] }) {
         {/* Sidebar — drawer on mobile, floating sticky card from lg up */}
         <aside
           id="sidebar"
-          className={`fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:top-4 lg:z-10 lg:my-4 lg:ml-4 lg:mr-0 lg:h-[calc(100vh-32px)] lg:w-[264px] lg:translate-x-0 lg:rounded-lg lg:border ${
+          className={`sidebar-enter fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:top-4 lg:z-10 lg:my-4 lg:ml-4 lg:mr-0 lg:h-[calc(100vh-32px)] lg:w-[264px] lg:translate-x-0 lg:rounded-lg lg:border ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -281,11 +288,10 @@ export function Shell({ sections }: { sections: Section[] }) {
             ) : null}
 
             <div className="grid gap-16">
-              {sections.map((section, index) => (
+              {sections.map((section) => (
                 <div key={section.id} hidden={!visibleIds.has(section.id)}>
                   <SectionView
                     section={section}
-                    index={index}
                     onMount={registerSection}
                   />
                 </div>
