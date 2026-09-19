@@ -7,9 +7,10 @@
  * source as the static Penal Code sections in `lib/data.ts`. The two must agree:
  * if a threshold moves here it has moved on the reference pages too.
  *
- * One deliberate departure from that port: `Drugs Selling` is a charge added
- * later (it is in the `penal-narcotics` reference section but not in the legacy
- * HTML), so it is the single entry below with no counterpart in the old build.
+ * Two deliberate departures from that port: `Drugs Selling` and `Resisting
+ * Arrest` are charges added later (both are in the `penal-*` reference sections
+ * but not in the legacy HTML), so they are the entries below with no counterpart
+ * in the old build.
  *
  * `lib/penal.test.ts` pins every boundary. Do not "tidy" the else-if chains —
  * several thresholds are inclusive at one end only, and that is deliberate.
@@ -49,6 +50,8 @@ export interface PenalInput {
   noSeatbelt: boolean;
 
   hackingDevice: boolean;
+  /** Deliberately obstructing a lawful arrest — fleeing on foot, breaking away, or hiding. */
+  resistingArrest: boolean;
   illegalMoney: number;
 }
 
@@ -89,6 +92,7 @@ export const EMPTY_PENAL_INPUT: PenalInput = {
   noSeatbelt: false,
 
   hackingDevice: false,
+  resistingArrest: false,
   illegalMoney: 0,
 };
 
@@ -185,6 +189,8 @@ export const CHARGE_DESCRIPTIONS: Record<string, string> = {
   /* Lainnya */
   "Possession of Unauthorized Device (Hacking Device)":
     "membawa lockpick atau kartu seperti green card.",
+  "Resisting Arrest":
+    "Setiap orang yang dengan sengaja menghalangi atau berupaya menghalangi petugas penegak hukum melakukan penangkapan yang sah dengan cara melarikan diri dengan berjalan kaki, melepaskan diri, atau bersembunyi.",
   "Minor Possession of Illegal Money": "uang merah < 50.000.",
   "Third Degree Possession of Illegal Money": "uang merah < 149.999.",
   "Second Degree Possession of Illegal Money": "uang merah < 399.999.",
@@ -334,6 +340,7 @@ export function computePenalCode(input: PenalInput): PenalGroup[] {
   /* Lainnya */
   if (input.hackingDevice)
     add("Lainnya", "Possession of Unauthorized Device (Hacking Device)");
+  if (input.resistingArrest) add("Lainnya", "Resisting Arrest");
 
   const { illegalMoney: money } = input;
   if (money > 0 && money < 50000) add("Lainnya", "Minor Possession of Illegal Money");

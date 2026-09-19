@@ -1210,6 +1210,7 @@ export const POCKETBOOK: Pocketbook = {
           type: "bullets",
           items: [
             "Possession of Unauthorized Device (Hacking Device) — membawa lockpick atau kartu seperti green card.",
+            "Resisting Arrest — Setiap orang yang dengan sengaja menghalangi atau berupaya menghalangi petugas penegak hukum melakukan penangkapan yang sah dengan cara melarikan diri dengan berjalan kaki, melepaskan diri, atau bersembunyi.",
             "Minor Possession of Illegal Money — uang merah < 50.000.",
             "Third Degree Possession of Illegal Money — uang merah < 149.999.",
             "Second Degree Possession of Illegal Money — uang merah < 399.999.",

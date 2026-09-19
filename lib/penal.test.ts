@@ -241,6 +241,24 @@ test("drug selling stacks with the weight-based narcotics charges", () => {
   assert.ok(narc.includes("Drug Trafficking"));
 });
 
+test("resisting arrest is a standalone Lainnya charge", () => {
+  assert.deepEqual(
+    charges(computePenalCode(input({ resistingArrest: true })), "Lainnya"),
+    ["Resisting Arrest"],
+  );
+  assert.deepEqual(charges(computePenalCode(input()), "Lainnya"), []);
+});
+
+test("resisting arrest stacks with the other Lainnya charges", () => {
+  const lain = charges(
+    computePenalCode(input({ resistingArrest: true, hackingDevice: true, illegalMoney: 1 })),
+    "Lainnya",
+  );
+  assert.ok(lain.includes("Resisting Arrest"));
+  assert.ok(lain.includes("Possession of Unauthorized Device (Hacking Device)"));
+  assert.ok(lain.includes("Minor Possession of Illegal Money"));
+});
+
 /* ---------- Charge descriptions ---------- */
 
 test("describeCharge folds class variants onto the reference entry", () => {

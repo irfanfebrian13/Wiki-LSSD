@@ -299,6 +299,11 @@ export function PenalCodeGenerator() {
                 checked={input.hackingDevice}
                 onChange={(v) => set("hackingDevice", v)}
               />
+              <CheckField
+                label="Menghalangi / melarikan diri dari penangkapan (Resisting Arrest)"
+                checked={input.resistingArrest}
+                onChange={(v) => set("resistingArrest", v)}
+              />
               <NumberField
                 label="Uang Merah (illegal money)"
                 value={input.illegalMoney}
