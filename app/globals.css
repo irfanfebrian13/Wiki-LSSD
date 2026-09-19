@@ -3,8 +3,10 @@
 /* ============================================================================
    LSSD Deputy Pocketbook — design tokens
 
-   Direction: modern tactical documentation, matching `lssd-wiki-modern.html`.
-   Near-black ground, charcoal surfaces, gold primary accent, mint secondary,
+   Direction: modern tactical documentation — a flat, structured handbook
+   rather than a dashboard. Depth comes from surface colour steps, hairline
+   borders, spacing and typography; the only page-level texture is a barely
+   visible 32px technical grid. Gold is the identity accent, mint secondary,
    coral for warnings and danger.
 
    ⚠ TOKEN NAMES ARE LOAD-BEARING
@@ -18,13 +20,22 @@
   /* Dark is the default — this is a night-shift tool. */
   color-scheme: dark;
 
-  --bg: #0c0e12;
-  --bg-2: #10131a;
-  --surface: #171b24;
-  --surface-2: #1d222d;
+  /* Four flat surface steps. Depth is these values plus the borders below —
+     no gradients, no glows. Page is darkest, then the sidebar rail, then the
+     cards, then anything that lifts on hover. */
+  --bg: #0d1015;
+  --bg-2: #12161d;
+  --sidebar: #12161d;
+  --surface: #171c24;
+  --surface-2: #1d232d;
   --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.12);
   --border-soft: rgba(255, 255, 255, 0.05);
+
+  /* The one line of page-level decoration: a 32px technical grid at 1.8%
+     white. Texture you feel rather than see — it must never read as a
+     pattern. */
+  --grid-line: rgba(255, 255, 255, 0.018);
 
   --text: #edeff3;
   --text-dim: #8b93a1;
@@ -44,11 +55,6 @@
   /* Text sitting on a filled gold surface — near-black here, white in light. */
   --on-accent: #1a1300;
 
-  /* The reference's ambient corner glow. Fixed to the viewport in `body::before`
-     so a 23-section page does not stretch the gradient. */
-  --glow-gold: rgba(255, 198, 92, 0.06);
-  --glow-mint: rgba(94, 234, 212, 0.05);
-
   --display: var(--font-space-grotesk), system-ui, sans-serif;
   --font: var(--font-inter), system-ui, sans-serif;
   --mono: var(--font-jetbrains-mono), ui-monospace, monospace;
@@ -60,11 +66,17 @@
 
   --bg: #f3f4f7;
   --bg-2: #eceef3;
+  /* The light rail stays on the card fill: the dark theme's step between
+     page and card has no equivalent here without going muddy. */
+  --sidebar: #ffffff;
   --surface: #ffffff;
   --surface-2: #f7f8fb;
   --border: rgba(12, 14, 18, 0.08);
   --border-strong: rgba(12, 14, 18, 0.14);
   --border-soft: rgba(12, 14, 18, 0.05);
+
+  /* The grid inverts: dark hairlines on a light ground, same restraint. */
+  --grid-line: rgba(12, 14, 18, 0.035);
 
   --text: #12141a;
   --text-dim: #5c6472;
@@ -83,9 +95,6 @@
   --coral-soft: rgba(255, 107, 107, 0.14);
 
   --on-accent: #ffffff;
-
-  --glow-gold: rgba(255, 198, 92, 0.25);
-  --glow-mint: rgba(94, 234, 212, 0.18);
 }
 
 /* Map the raw tokens into Tailwind's namespace.
@@ -94,6 +103,7 @@
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-2: var(--bg-2);
+  --color-sidebar: var(--sidebar);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
@@ -157,17 +167,22 @@
     font-family: var(--display);
   }
 
-  /* Ambient corner glow — the reference's body backdrop, pinned to the
-     viewport instead of the document. */
+  /* The page's only texture: a 32px technical grid, fixed to the viewport so a
+     23-section page does not stretch it (and so it does not scroll with the
+     content). Two 1px hairlines at 1.8% white — present as structure, never as
+     a visible pattern. This replaced the earlier ambient corner glow. */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background:
-      radial-gradient(circle at 15% 0%, var(--glow-gold), transparent 40%),
-      radial-gradient(circle at 85% 20%, var(--glow-mint), transparent 40%);
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    transition: background-color 0.3s;
   }
 
   ::selection {

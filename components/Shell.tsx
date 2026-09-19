@@ -247,7 +247,7 @@ export function Shell({ sections }: { sections: Section[] }) {
             from `lg` up. The right border is the only edge rule at every width. */}
         <aside
           id="sidebar"
-          className={`sidebar-enter fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:bottom-auto lg:top-0 lg:z-10 lg:h-screen lg:w-[264px] lg:translate-x-0 ${
+          className={`sidebar-enter fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-sidebar transition-transform duration-300 lg:sticky lg:bottom-auto lg:top-0 lg:z-10 lg:h-screen lg:w-[264px] lg:translate-x-0 ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
