@@ -3,7 +3,7 @@
 import { ArrowRight, Shield } from "lucide-react";
 
 import { useCountUp } from "./motion";
-import { BTN_GOLD, BTN_LINK, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
+import { BTN_GOLD, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
 
 interface HeroProps {
   meta: { sections: number; tenCodes: number; groups: number };
@@ -87,7 +87,7 @@ export function Hero({ meta }: HeroProps) {
           Buka Report Generator
           <ArrowRight aria-hidden size={14} strokeWidth={2} className="shrink-0" />
         </a>
-        <a href="#penal-generator" className={BTN_LINK}>
+        <a href="#penal-generator" className={BTN_OUTLINE}>
           Buka Penal Generator
           <ArrowRight aria-hidden size={14} strokeWidth={2} className="shrink-0" />
         </a>
