@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { ArrowUp, SearchX } from "lucide-react";
+import { ArrowUp, Search, SearchX } from "lucide-react";
 
 import { buildSearchIndex, matchSections } from "@/lib/search";
 import type { NavGroup, Section } from "@/lib/types";
@@ -241,10 +241,11 @@ export function Shell({ sections }: { sections: Section[] }) {
       </div>
 
       <div className="relative z-10 flex">
-        {/* Sidebar — drawer on mobile, floating sticky card from lg up */}
+        {/* Sidebar — off-canvas drawer below `lg`, a flush full-height column
+            from `lg` up. The right border is the only edge rule at every width. */}
         <aside
           id="sidebar"
-          className={`sidebar-enter fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:top-4 lg:z-10 lg:my-4 lg:ml-4 lg:mr-0 lg:h-[calc(100vh-32px)] lg:w-[264px] lg:translate-x-0 lg:rounded-lg lg:border ${
+          className={`sidebar-enter fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto rounded-none border-r border-border bg-surface transition-transform duration-300 lg:sticky lg:bottom-auto lg:top-0 lg:z-10 lg:h-screen lg:w-[264px] lg:translate-x-0 ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -253,9 +254,7 @@ export function Shell({ sections }: { sections: Section[] }) {
             visibleIds={visibleIds}
             activeId={activeId}
             query={query}
-            onQueryChange={setQuery}
             onNavigate={handleNavigate}
-            searchInputRef={searchInputRef}
           />
         </aside>
 
@@ -268,7 +267,36 @@ export function Shell({ sections }: { sections: Section[] }) {
         ) : null}
 
         <main id="content" className="min-w-0 flex-1">
-          <div className="mx-auto w-full max-w-[900px] px-[18px] pb-[60px] pt-6 lg:px-11 lg:pb-20 lg:pt-[38px]">
+          {/* Search — sticky, top-center. Owned here rather than in the sidebar
+              because this is where `query`/`setQuery` live: the same state still
+              drives both the section filter below and the sidebar nav's own
+              filtering, so relocating the input changed nothing about what it
+              filters. The wrapper spans the content column so its frosted
+              backdrop covers the full width, while the field itself stays
+              centered and capped. On mobile it parks directly under the sticky
+              topbar; from `lg` up there is no topbar, so it pins to the top. */}
+          <div className="sticky top-[59px] z-20 bg-bg/90 px-[18px] py-3 backdrop-blur lg:top-0 lg:px-11">
+            <div className="relative mx-auto w-full max-w-[500px]">
+              <input
+                ref={searchInputRef}
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Cari materi…"
+                aria-label="Cari di pocketbook"
+                autoComplete="off"
+                className="w-full rounded-sm border border-border bg-surface-2 py-[9px] pl-3 pr-11 text-[13px] text-text placeholder:text-text-faint focus:border-gold focus:outline-none"
+              />
+              <Search
+                aria-hidden
+                size={14}
+                strokeWidth={2}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-faint"
+              />
+            </div>
+          </div>
+
+          <div className="mx-auto w-full max-w-[900px] px-[18px] pb-[60px] pt-5 lg:px-11 lg:pb-20 lg:pt-7">
             {!isSearching ? <Hero meta={heroStats} /> : null}
 
             {isSearching && visibleIds.size === 0 ? (

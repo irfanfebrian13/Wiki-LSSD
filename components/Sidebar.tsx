@@ -79,10 +79,12 @@ interface SidebarProps {
   /** Ids currently matching the search query. */
   visibleIds: Set<string>;
   activeId: string | null;
+  /** The search query. The input itself lives in the main content area; this
+      component only reads the value — to hide the quick-jump chips while a
+      search is active, and to re-measure the sliding pill when a filter hides
+      entries. */
   query: string;
-  onQueryChange: (value: string) => void;
   onNavigate: (id: string) => void;
-  searchInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export function Sidebar({
@@ -90,9 +92,7 @@ export function Sidebar({
   visibleIds,
   activeId,
   query,
-  onQueryChange,
   onNavigate,
-  searchInputRef,
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(() => {
     const collapsedSet = new Set<string>();
@@ -165,28 +165,9 @@ export function Sidebar({
             LSSD Pocketbook
           </div>
           <div className="mt-px text-[11px] text-text-dim">Deputy Handbook</div>
-        </div>
-      </div>
-
-      {/* Search */}
-      <div className="px-4 pb-3.5">
-        <div className="relative">
-          <input
-            ref={searchInputRef}
-            type="search"
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Cari materi… (mis. 10-4, miranda)"
-            aria-label="Cari di pocketbook"
-            autoComplete="off"
-            className="w-full rounded-sm border border-border bg-surface-2 py-[9px] pl-3 pr-11 text-[13px] text-text placeholder:text-text-faint focus:border-gold focus:outline-none"
-          />
-          <kbd
-            aria-hidden
-            className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm border border-border bg-surface px-1.5 py-px font-mono text-[10px] text-text-faint"
-          >
-            /
-          </kbd>
+          <div className="mt-0.5 text-[10.5px] text-text-faint">
+            Handbook by Brian Putra
+          </div>
         </div>
       </div>
 
