@@ -40,9 +40,7 @@ export function Hero({ meta }: HeroProps) {
   ];
 
   return (
-    /* `hero-texture` draws the inverted topographic backdrop and its fade-out
-       behind this block only — see the class in `globals.css`. */
-    <div className="hero-texture mb-12">
+    <div className="mb-12">
       <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
         <Shield {...CONTENT_ICON_PROPS} />
         County of Los Santos
