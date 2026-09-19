@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { LucideProps } from "lucide-react";
+import { SearchX } from "lucide-react";
 
 import { sectionIcon, groupIcon, GROUP_CHEVRONS } from "@/lib/section-icons";
 import type { NavGroup } from "@/lib/types";
@@ -172,17 +173,25 @@ export function Sidebar({
       </div>
 
       {!isSearching ? (
-        <div className="mb-1 flex flex-wrap gap-1.5 px-4 pb-3.5">
-          {QUICK_JUMPS.map((jump) => (
-            <a
-              key={jump.label}
-              href={`#${jump.target}`}
-              onClick={() => navigateTo(jump.target)}
-              className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10.5px] font-medium text-text-dim transition-colors hover:border-gold hover:text-gold"
-            >
-              {jump.label}
-            </a>
-          ))}
+        <div className="mb-1 px-4 pb-3.5">
+          {/* The chips are shortcuts, not a second navigation list — most of
+              them point at sections already in the nav below. Labelling them
+              is what keeps that from reading as a duplicate nav. */}
+          <div className="mb-2 px-0.5 font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em] text-text-faint">
+            Quick Access
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {QUICK_JUMPS.map((jump) => (
+              <a
+                key={jump.label}
+                href={`#${jump.target}`}
+                onClick={() => navigateTo(jump.target)}
+                className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10.5px] font-medium text-text-dim transition-colors hover:border-gold hover:text-gold"
+              >
+                {jump.label}
+              </a>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -202,6 +211,26 @@ export function Sidebar({
           className="nav-pill pointer-events-none absolute left-3 right-3 top-0 rounded-sm bg-gold-soft opacity-0"
           style={{ height: 0 }}
         />
+
+        {/* A search that matches nothing leaves every group filtered out, so
+            without this the nav would collapse to empty space with no
+            explanation. The message names the query, matching the main column's
+            empty state. */}
+        {isSearching && visibleIds.size === 0 ? (
+          <div className="px-3 py-6 text-center">
+            <SearchX
+              aria-hidden
+              size={20}
+              strokeWidth={2}
+              className="mx-auto mb-2 text-text-faint"
+            />
+            <p className="text-[12px] leading-relaxed text-text-faint">
+              Tidak ada hasil untuk &ldquo;
+              <span className="font-mono text-text-dim">{query.trim()}</span>
+              &rdquo;
+            </p>
+          </div>
+        ) : null}
 
         {groups.map((group, gi) => {
           const items = group.items.filter((s) => visibleIds.has(s.id));

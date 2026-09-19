@@ -3,7 +3,7 @@
 import { ArrowRight, Shield } from "lucide-react";
 
 import { useCountUp } from "./motion";
-import { BTN_GOLD, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
+import { BTN_GOLD, BTN_LINK, BTN_OUTLINE, CONTENT_ICON_PROPS } from "./ui";
 
 interface HeroProps {
   meta: { sections: number; tenCodes: number; groups: number };
@@ -40,7 +40,9 @@ export function Hero({ meta }: HeroProps) {
   ];
 
   return (
-    <div className="mb-12">
+    /* `hero-texture` draws the inverted topographic backdrop and its fade-out
+       behind this block only — see the class in `globals.css`. */
+    <div className="hero-texture mb-12">
       <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
         <Shield {...CONTENT_ICON_PROPS} />
         County of Los Santos
@@ -69,7 +71,11 @@ export function Hero({ meta }: HeroProps) {
         ))}
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2.5">
+      {/* Three tiers of emphasis, so the eye lands in one order: one filled
+          gold primary, one outlined secondary, one plain text link. The link
+          is last in the DOM as well as the weakest visually, so the tab order
+          and the reading order agree with the visual order. */}
+      <div className="mt-5 flex flex-wrap items-center gap-2.5">
         <a href="#ten-codes" className={BTN_GOLD}>
           Mulai Belajar
           <ArrowRight
@@ -81,9 +87,11 @@ export function Hero({ meta }: HeroProps) {
         </a>
         <a href="#patrol-report" className={BTN_OUTLINE}>
           Buka Report Generator
+          <ArrowRight aria-hidden size={14} strokeWidth={2} className="shrink-0" />
         </a>
-        <a href="#penal-generator" className={BTN_OUTLINE}>
-          Penal Code Generator
+        <a href="#penal-generator" className={BTN_LINK}>
+          Buka Penal Generator
+          <ArrowRight aria-hidden size={14} strokeWidth={2} className="shrink-0" />
         </a>
       </div>
     </div>

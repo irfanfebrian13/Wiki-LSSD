@@ -125,6 +125,13 @@ export const BTN_GOLD =
 export const BTN_OUTLINE =
   "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint motion-safe:hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40";
 
+/* The third tier: a plain text action. Deliberately carries no fill, border or
+   lift, so it reads as a footnote beside the two filled buttons rather than
+   competing with them. Kept as a link style (not a button) because that is
+   exactly its role — a secondary route into a tool, not a primary call. */
+export const BTN_LINK =
+  "inline-flex items-center gap-1.5 px-1 py-[11px] text-[13.5px] font-medium text-text-dim transition-colors duration-150 hover:text-gold";
+
 export const BTN_MINT =
   "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] motion-safe:hover:-translate-y-0.5 active:scale-[0.97]";
 

@@ -199,7 +199,7 @@ export function DefList({ title, items }: { title?: string; items: DefItem[] }) 
         {items.map((item, i) => (
           <div
             key={i}
-            className="grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded-md border border-border bg-surface px-4 py-3"
+            className="card-lift grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded-lg border border-border bg-surface px-4 py-3"
             style={
               item.color ? { borderLeftWidth: 2, borderLeftColor: item.color } : undefined
             }
@@ -226,7 +226,11 @@ export function Ranks({ items }: { items: string[] }) {
       {items.map((rank, i) => (
         <li
           key={i}
-          className="flex items-center gap-3.5 rounded-md border border-border bg-surface px-4 py-2.5 transition-transform duration-150 hover:translate-x-1"
+          /* Same card treatment as every other surface on the page: the
+             hairline border, the raised `--surface` fill and the shared
+             `card-lift` hover, so these rows read as one design system with the
+             stat boxes above rather than as bare list rows. */
+          className="card-lift flex items-center gap-3.5 rounded-md border border-border bg-surface px-4 py-2.5 transition-transform duration-150 hover:translate-x-1"
         >
           <span aria-hidden className="w-6 font-mono text-[11px] text-text-faint">
             {String(i + 1).padStart(2, "0")}
@@ -248,7 +252,7 @@ export function Legend({ title, items }: { title: string; items: LegendItem[] })
         {items.map((item, i) => (
           <div
             key={i}
-            className="flex items-start gap-3 rounded-md border border-border bg-surface px-4 py-2.5"
+            className="card-lift flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-2.5"
           >
             <span
               aria-hidden

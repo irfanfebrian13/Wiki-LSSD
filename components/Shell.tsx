@@ -10,7 +10,7 @@ import { Hero } from "./Hero";
 import { SectionView } from "./SectionView";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
-import { replayReveal } from "./motion";
+import { replayReveal, prefersReducedMotion } from "./motion";
 
 /**
  * Below this width the sidebar becomes an overlay drawer.
@@ -205,6 +205,8 @@ export function Shell({ sections }: { sections: Section[] }) {
 
   return (
     <>
+      <ReadingProgress />
+
       <a
         href="#content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-sm focus:border focus:border-gold focus:bg-surface focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-text"
@@ -340,24 +342,113 @@ export function Shell({ sections }: { sections: Section[] }) {
   );
 }
 
+/** A hairline bar across the very top of the viewport, filled by scroll depth.
+ *
+ *  Written straight to the element's `transform` rather than held in state: a
+ *  progress bar changes on every scroll frame, and routing that through
+ *  `setState` would re-render the shell — and with it the whole section tree —
+ *  60 times a second while scrolling. The scroll listener is coalesced into one
+ *  `requestAnimationFrame`, so a burst of scroll events costs a single write.
+ *
+ *  `scaleX` rather than `width` keeps the work on the compositor, so filling it
+ *  never triggers layout. */
+function ReadingProgress() {
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const doc = document.documentElement;
+      // The scrollable distance, not the full document height: at the bottom
+      // of the page `scrollY` equals this, so the bar lands exactly at 100%.
+      const max = doc.scrollHeight - doc.clientHeight;
+      const ratio = max > 0 ? Math.min(doc.scrollTop / max, 1) : 0;
+      el.style.transform = `scaleX(${ratio})`;
+    };
+
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
+
+  return (
+    <div
+      aria-hidden
+      /* Above the sticky topbar and the drawer scrim, below the sidebar drawer
+         itself, so it is never hidden behind the header it sits on. */
+      className="fixed inset-x-0 top-0 z-[45] h-[3px] bg-transparent"
+    >
+      <div
+        ref={barRef}
+        className="h-full origin-left bg-gold"
+        style={{ transform: "scaleX(0)" }}
+      />
+    </div>
+  );
+}
+
 /** Appears once the page has scrolled past the first screen or so. */
 function BackToTop() {
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShown(window.scrollY > 600);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    let frame = 0;
+
+    /* Coalesced into one frame like the progress bar: this listener and that
+       one both fire on every scroll event, and neither needs to run more than
+       once per painted frame. */
+    const update = () => {
+      frame = 0;
+      setShown(window.scrollY > 600);
+    };
+
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+    };
   }, []);
 
   return (
     <button
       type="button"
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={() =>
+        window.scrollTo({
+          top: 0,
+          // Honor the OS setting here too: the CSS rule that disables smooth
+          // scrolling covers anchor jumps, but not this programmatic call.
+          behavior: prefersReducedMotion() ? "auto" : "smooth",
+        })
+      }
       aria-label="Kembali ke atas"
-      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border-strong bg-surface text-text transition-all duration-200 hover:border-gold hover:text-gold ${
-        shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"
+      /* Hidden by `visibility` as well as opacity so it is out of the tab order
+         and unreachable by screen readers while off-screen — an invisible but
+         focusable button is a real trap for keyboard users. */
+      className={`fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-border-strong bg-surface text-text transition-[opacity,transform,visibility] duration-200 hover:border-gold hover:text-gold ${
+        shown
+          ? "visible translate-y-0 opacity-100"
+          : "invisible pointer-events-none translate-y-2.5 opacity-0"
       }`}
     >
       <ArrowUp aria-hidden size={16} strokeWidth={2} />
