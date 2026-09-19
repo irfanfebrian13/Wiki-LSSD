@@ -1173,7 +1173,7 @@ export const POCKETBOOK: Pocketbook = {
             "Felony Possession of Schedule II — meth bag dan cocaine > 100 gram.",
             "Distribute of a Schedule Category — kedua jenis narcotics total > 800 gram.",
             "Drug Smuggling — kedua jenis narcotics total > 2000 gram.",
-            "Drug Trafficking — kedua jenis narcotics total > 4000 gram.",
+            "Drug Trafficking (Court Verdict) — kedua jenis narcotics total > 4000 gram.",
             "Drugs Selling — setiap orang yang menjual atau menawarkan untuk menjual suatu zat yang diawasi kepada orang lain, serta memiliki zat yang diawasi tersebut, dinyatakan bersalah melakukan tindak pidana penjualan narkoba.",
             "Possession of Drug Paraphernalia — alat produksi (A < 10, B > 10): Meth Oven, Meth Table, Bagging Table, Baggy, Planting Pot, Cannabis Seed, Weed, Phos, Pseudo, Acid, Liquid Meth, Meth.",
             "Drug Manufacturing — melakukan proses produksi kedua jenis schedule controlled substances.",

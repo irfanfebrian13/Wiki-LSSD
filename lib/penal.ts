@@ -164,7 +164,7 @@ export const CHARGE_DESCRIPTIONS: Record<string, string> = {
   "Distribute of a Schedule Category":
     "kedua jenis narcotics total > 800 gram.",
   "Drug Smuggling": "kedua jenis narcotics total > 2000 gram.",
-  "Drug Trafficking": "kedua jenis narcotics total > 4000 gram.",
+  "Drug Trafficking (Court Verdict)": "kedua jenis narcotics total > 4000 gram.",
   "Drugs Selling":
     "setiap orang yang menjual atau menawarkan untuk menjual suatu zat yang diawasi kepada orang lain, serta memiliki zat yang diawasi tersebut, dinyatakan bersalah melakukan tindak pidana penjualan narkoba.",
   "Possession of Drug Paraphernalia":
@@ -312,7 +312,7 @@ export function computePenalCode(input: PenalInput): PenalGroup[] {
   const totalNarc = s1 + s2;
   if (totalNarc > 800) add("Narcotics", "Distribute of a Schedule Category");
   if (totalNarc > 2000) add("Narcotics", "Drug Smuggling");
-  if (totalNarc > 4000) add("Narcotics", "Drug Trafficking");
+  if (totalNarc > 4000) add("Narcotics", "Drug Trafficking (Court Verdict)");
   if (input.drugSelling) add("Narcotics", "Drugs Selling");
 
   const { paraphernalia: para } = input;

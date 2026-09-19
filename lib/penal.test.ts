@@ -137,7 +137,7 @@ test("combined narcotic weight stacks distribution, smuggling and trafficking", 
   const narc = charges(groups, "Narcotics");
   assert.ok(narc.includes("Distribute of a Schedule Category"));
   assert.ok(narc.includes("Drug Smuggling"));
-  assert.ok(narc.includes("Drug Trafficking"));
+  assert.ok(narc.includes("Drug Trafficking (Court Verdict)"));
 
   // Exactly 800 is not "distribute" — the comparison is strictly greater.
   assert.deepEqual(
@@ -238,7 +238,7 @@ test("drug selling stacks with the weight-based narcotics charges", () => {
     "Narcotics",
   );
   assert.ok(narc.includes("Drugs Selling"));
-  assert.ok(narc.includes("Drug Trafficking"));
+  assert.ok(narc.includes("Drug Trafficking (Court Verdict)"));
 });
 
 test("resisting arrest is a standalone Lainnya charge", () => {
