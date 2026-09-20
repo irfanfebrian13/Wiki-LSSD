@@ -7,10 +7,15 @@
  * source as the static Penal Code sections in `lib/data.ts`. The two must agree:
  * if a threshold moves here it has moved on the reference pages too.
  *
- * Two deliberate departures from that port: `Drugs Selling` and `Resisting
- * Arrest` are charges added later (both are in the `penal-*` reference sections
- * but not in the legacy HTML), so they are the entries below with no counterpart
- * in the old build.
+ * Three deliberate departures from that port. Two are additions: `Drugs Selling`
+ * and `Resisting Arrest` are charges added later (both are in the `penal-*`
+ * reference sections but not in the legacy HTML), so they are the entries below
+ * with no counterpart in the old build. The third is a correction: the combined
+ * narcotics weight tiers (Distribute / Smuggling / Trafficking) are one
+ * progression that outranks the per-schedule possession charges, and the legacy
+ * build wrongly charged all of them at once, so here a total above the 800g
+ * floor yields the single highest tier and nothing else from the narcotics
+ * weight rules. See the comment at that chain.
  *
  * `lib/penal.test.ts` pins every boundary. Do not "tidy" the else-if chains —
  * several thresholds are inclusive at one end only, and that is deliberate.
@@ -299,20 +304,39 @@ export function computePenalCode(input: PenalInput): PenalGroup[] {
 
   /* Narcotics */
   const { sched1: s1, sched2: s2 } = input;
-  if (s1 > 0)
-    add(
-      "Narcotics",
-      s1 <= 60 ? "Misdemeanor Possession of Schedule I" : "Felony Possession of Schedule I",
-    );
-  if (s2 > 0)
-    add(
-      "Narcotics",
-      s2 <= 100 ? "Misdemeanor Possession of Schedule II" : "Felony Possession of Schedule II",
-    );
+  /* The combined-weight tiers outrank the per-schedule possession charges, so
+     the two are one selection and not two. Above 800g total the narcotics
+     offence is the weight tier alone — 800 < weight <= 2000 is "Distribute",
+     2000 < weight <= 4000 is "Drug Smuggling", and above 4000 is "Drug
+     Trafficking" — and only the highest tier the weight reaches is charged: a
+     suspect at 6000g is a trafficker, not simultaneously a distributor and a
+     smuggler, and not also a possessor of each schedule that fed the total.
+     Below the 800g floor no tier applies and the Schedule I/II possession
+     charges are computed normally from their own gram thresholds.
+
+     This is why the tiers are an `else if` chain and the possessions sit in its
+     `else`: the reference bullets describe one quantity of narcotics, so the
+     tiers are mutually exclusive, and the weight tier supersedes the possession
+     charge for the same drugs. The legacy build got both wrong, charging every
+     tier and the possessions together. Every other weight family in this file
+     (Schedule I/II, poppy, ammo, vest, illegal money) already selects a single
+     tier the same way. */
   const totalNarc = s1 + s2;
-  if (totalNarc > 800) add("Narcotics", "Distribute of a Schedule Category");
-  if (totalNarc > 2000) add("Narcotics", "Drug Smuggling");
   if (totalNarc > 4000) add("Narcotics", "Drug Trafficking (Court Verdict)");
+  else if (totalNarc > 2000) add("Narcotics", "Drug Smuggling");
+  else if (totalNarc > 800) add("Narcotics", "Distribute of a Schedule Category");
+  else {
+    if (s1 > 0)
+      add(
+        "Narcotics",
+        s1 <= 60 ? "Misdemeanor Possession of Schedule I" : "Felony Possession of Schedule I",
+      );
+    if (s2 > 0)
+      add(
+        "Narcotics",
+        s2 <= 100 ? "Misdemeanor Possession of Schedule II" : "Felony Possession of Schedule II",
+      );
+  }
   if (input.drugSelling) add("Narcotics", "Drugs Selling");
 
   const { paraphernalia: para } = input;

@@ -132,18 +132,60 @@ test("schedule I and II split at their own gram thresholds", () => {
   assert.deepEqual(s2(101), ["Felony Possession of Schedule II"]);
 });
 
-test("combined narcotic weight stacks distribution, smuggling and trafficking", () => {
-  const groups = computePenalCode(input({ sched1: 5000, sched2: 0 }));
-  const narc = charges(groups, "Narcotics");
-  assert.ok(narc.includes("Distribute of a Schedule Category"));
-  assert.ok(narc.includes("Drug Smuggling"));
-  assert.ok(narc.includes("Drug Trafficking (Court Verdict)"));
+test("combined narcotic weight picks the single highest tier", () => {
+  const at = (total: number) => {
+    // Split the total across the two schedules to prove the tier reads the sum.
+    const sched1 = Math.min(total, 1000);
+    return charges(computePenalCode(input({ sched1, sched2: total - sched1 })), "Narcotics");
+  };
 
-  // Exactly 800 is not "distribute" — the comparison is strictly greater.
+  // Progressive, and only the highest applicable tier is charged.
+  assert.deepEqual(at(4001), ["Drug Trafficking (Court Verdict)"]);
+  assert.deepEqual(at(6000), ["Drug Trafficking (Court Verdict)"]);
+  assert.deepEqual(at(4000), ["Drug Smuggling"]);
+  assert.deepEqual(at(2001), ["Drug Smuggling"]);
+  assert.deepEqual(at(2000), ["Distribute of a Schedule Category"]);
+  assert.deepEqual(at(801), ["Distribute of a Schedule Category"]);
+});
+
+test("a weight tier excludes the per-schedule possession charges", () => {
+  // The reported case: 1000g weed/opium + 1000g meth/cocaine = 2000g. The
+  // possessions for both schedules are superseded by the single tier.
+  assert.deepEqual(charges(computePenalCode(input({ sched1: 1000, sched2: 1000 })), "Narcotics"), [
+    "Distribute of a Schedule Category",
+  ]);
+
+  // Same for the higher tiers: one charge, never possession + tier.
+  assert.deepEqual(charges(computePenalCode(input({ sched1: 3000, sched2: 3000 })), "Narcotics"), [
+    "Drug Trafficking (Court Verdict)",
+  ]);
+  assert.deepEqual(charges(computePenalCode(input({ sched2: 6000 })), "Narcotics"), [
+    "Drug Trafficking (Court Verdict)",
+  ]);
+  assert.deepEqual(charges(computePenalCode(input({ sched1: 2001 })), "Narcotics"), [
+    "Drug Smuggling",
+  ]);
+});
+
+test("below the 800g floor the possessions are charged normally", () => {
+  // 799g total is under the distribute floor, so the possessions stand.
+  assert.deepEqual(charges(computePenalCode(input({ sched1: 400, sched2: 399 })), "Narcotics"), [
+    "Felony Possession of Schedule I",
+    "Felony Possession of Schedule II",
+  ]);
+
+  // Exactly 800 is not "distribute" — the comparison is strictly greater, so
+  // the possession charge survives.
   assert.deepEqual(
     charges(computePenalCode(input({ sched1: 800 })), "Narcotics"),
     ["Felony Possession of Schedule I"],
   );
+
+  // The misdemeanor thresholds still split on each schedule's own quantity.
+  assert.deepEqual(charges(computePenalCode(input({ sched1: 60, sched2: 100 })), "Narcotics"), [
+    "Misdemeanor Possession of Schedule I",
+    "Misdemeanor Possession of Schedule II",
+  ]);
 });
 
 test("paraphernalia classes split at 10", () => {
