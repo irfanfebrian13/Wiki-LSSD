@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   computePenalCode,
@@ -27,7 +27,18 @@ import { BTN_GOLD, BTN_MINT, Card, CardTitle, CheckField, FIELD, Field } from ".
  * how the tool reads, not decoration.
  */
 
-/** A number field that tolerates an empty box as 0 rather than NaN. */
+/** A number field that tolerates an empty box as 0 rather than NaN.
+ *
+ * The box holds a string, not the number itself. A controlled `type="number"`
+ * bound straight to the value cannot be cleared: the empty box parses back to
+ * 0, and React immediately writes the 0 in again. The number the generator
+ * computes with still lives in the parent — this is only what is displayed.
+ *
+ * The starting `0` reads as a placeholder. Focusing it selects the whole value,
+ * so the first keystroke replaces it rather than appending to it — no Backspace
+ * needed, and `05`/`010` are never produced. Stripping leading zeros on the way
+ * in is the second line of defence, for any path the selection does not cover.
+ */
 function NumberField({
   label,
   value,
@@ -39,13 +50,40 @@ function NumberField({
   onChange: (value: number) => void;
   min?: number;
 }) {
+  const [text, setText] = useState(() => String(value));
+  const editing = useRef(false);
+
+  /* Re-sync when the value is set from outside (Reset). Skipped mid-edit so a
+     half-typed box is never overwritten by the echo of its own change. */
+  useEffect(() => {
+    if (editing.current) return;
+    setText(String(value));
+  }, [value]);
+
+  const commit = (raw: string) => {
+    const cleaned = raw.replace(/^0+(?=\d)/, "");
+    setText(cleaned);
+    onChange(Number.parseFloat(cleaned) || 0);
+  };
+
   return (
     <Field label={label}>
       <input
         type="number"
         min={min}
-        value={value}
-        onChange={(e) => onChange(Number.parseFloat(e.target.value) || 0)}
+        value={text}
+        onFocus={(e) => {
+          editing.current = true;
+          // The placeholder 0 is replaced by the first keystroke, not appended.
+          if (e.currentTarget.value === "0") e.currentTarget.select();
+        }}
+        onChange={(e) => commit(e.target.value)}
+        onBlur={(e) => {
+          editing.current = false;
+          /* Empty means 0 to the maths, but the field should not be left blank
+             once the deputy has moved on, so restore the canonical value. */
+          commit(e.currentTarget.value === "" ? "0" : e.currentTarget.value);
+        }}
         className={`${FIELD} font-mono`}
       />
     </Field>
