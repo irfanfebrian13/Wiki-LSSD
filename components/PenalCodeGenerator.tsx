@@ -11,7 +11,7 @@ import {
   type PenalInput,
 } from "@/lib/penal";
 
-import { BTN_GOLD, BTN_MINT, Card, CardTitle, CheckField, FIELD, Field } from "./ui";
+import { BTN_GOLD, BTN_OUTLINE, CheckField, FIELD, Field } from "./ui";
 
 /**
  * Penal Code Generator.
@@ -90,6 +90,37 @@ function NumberField({
   );
 }
 
+/**
+ * One form group: a Fraunces heading over a hairline, its fields beneath.
+ *
+ * The brief's shape for the generator's form — groups, not boxed cards. The
+ * numbered tag is part of how the tool reads, not decoration.
+ */
+function Group({
+  tag,
+  title,
+  children,
+}: {
+  tag: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="grid gap-3">
+      <h3 className="flex items-baseline gap-2.5 border-b border-border pb-2 font-display text-[20px] font-semibold text-text">
+        <span
+          aria-hidden
+          className="font-mono text-[12px] font-semibold text-gold"
+        >
+          {tag}
+        </span>
+        {title}
+      </h3>
+      <div className="grid gap-3">{children}</div>
+    </section>
+  );
+}
+
 export function PenalCodeGenerator() {
   const [input, setInput] = useState<PenalInput>(EMPTY_PENAL_INPUT);
   const [copied, setCopied] = useState(false);
@@ -117,273 +148,250 @@ export function PenalCodeGenerator() {
   };
 
   return (
-    <div className="grid gap-[18px]">
-      <div className="grid items-start gap-[18px] lg:grid-cols-2">
-        {/* ---- Left column ----
-            `reveal-stack` so each form card enters on the shared delay ladder.
-            The section's own stack only sees this grid as one child, so without
-            this the eight cards would appear together. The ladder is clamped at
-            360ms in `globals.css`, so the last card is never more than that
-            behind the first. */}
-        <div className="reveal-stack grid gap-[18px]">
-          <Card accent="gold">
-            <CardTitle tag="1">Robbery</CardTitle>
-            <div className="grid gap-3">
-              <Field label="Jenis Robbery">
-                <select
-                  value={input.robberyType}
-                  onChange={(e) => set("robberyType", e.target.value as PenalInput["robberyType"])}
-                  className={FIELD}
-                >
-                  <option value="none">Tidak ada</option>
-                  <option value="ltd">LTD / Commercial Robbery</option>
-                  <option value="fleeca">Fleeca Robbery</option>
-                  <option value="major">
-                    Grupee / Cash Exchange / Laundromat / Bobcat / Cargo
-                  </option>
-                  <option value="bank">Pacific / Maze / Blaine County Bank</option>
-                  <option value="vangelico">Vangelico Jewelry</option>
-                </select>
-              </Field>
+    <div className="grid items-start gap-10 min-[980px]:grid-cols-[minmax(0,1fr)_340px]">
+      {/* ---- Form ----
+          `reveal-stack` so each group enters on the shared delay ladder. The
+          section's own stack only sees this grid as one child, so without this
+          the eight groups would appear together. The ladder is clamped at 360ms
+          in `globals.css`, so the last group is never more than that behind the
+          first. */}
+      <div className="reveal-stack grid gap-6">
+        <Group tag="1" title="Robbery">
+          <Field label="Jenis Robbery">
+            <select
+              value={input.robberyType}
+              onChange={(e) => set("robberyType", e.target.value as PenalInput["robberyType"])}
+              className={FIELD}
+            >
+              <option value="none">Tidak ada</option>
+              <option value="ltd">LTD / Commercial Robbery</option>
+              <option value="fleeca">Fleeca Robbery</option>
+              <option value="major">
+                Grupee / Cash Exchange / Laundromat / Bobcat / Cargo
+              </option>
+              <option value="bank">Pacific / Maze / Blaine County Bank</option>
+              <option value="vangelico">Vangelico Jewelry</option>
+            </select>
+          </Field>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <NumberField
-                  label="Jumlah Sandera"
-                  value={input.hostages}
-                  onChange={(v) => set("hostages", v)}
-                />
-                <Field label="Peran Suspect">
-                  <select
-                    value={input.isDriver ? "yes" : "no"}
-                    onChange={(e) => set("isDriver", e.target.value === "yes")}
-                    className={FIELD}
-                  >
-                    <option value="no">Bukan driver</option>
-                    <option value="yes">Driver (evading)</option>
-                  </select>
-                </Field>
-              </div>
-
-              <CheckField
-                label="Kedapatan membawa barang/uang hasil curian"
-                checked={input.stolenGoods}
-                onChange={(v) => set("stolenGoods", v)}
-              />
-            </div>
-          </Card>
-
-          <Card accent="mint">
-            <CardTitle tag="2">Kekerasan</CardTitle>
-            <div className="grid gap-2.5">
-              <CheckField
-                label="Terlibat baku tembak (Gang War)"
-                checked={input.gangWar}
-                onChange={(v) => set("gangWar", v)}
-              />
-              <CheckField
-                label="Menyerang Deputy/Officer dengan senjata"
-                checked={input.assaultDeputy}
-                onChange={(v) => set("assaultDeputy", v)}
-              />
-              <CheckField
-                label="Hasil GSR test positif (menembak)"
-                checked={input.gsr}
-                onChange={(v) => set("gsr", v)}
-              />
-            </div>
-          </Card>
-
-          <Card>
-            <CardTitle tag="3">Properti</CardTitle>
-            <Field label="Kerusakan Properti">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <NumberField
+              label="Jumlah Sandera"
+              value={input.hostages}
+              onChange={(v) => set("hostages", v)}
+            />
+            <Field label="Peran Suspect">
               <select
-                value={input.property}
-                onChange={(e) => set("property", e.target.value as PenalInput["property"])}
+                value={input.isDriver ? "yes" : "no"}
+                onChange={(e) => set("isDriver", e.target.value === "yes")}
                 className={FIELD}
               >
-                <option value="none">Tidak ada</option>
-                <option value="vandalism">Vandalism (properti umum/pribadi)</option>
-                <option value="vandalismGov">Vandalism on Government Property</option>
-                <option value="destructionGov">
-                  Destruction of Government Property (mayor)
-                </option>
+                <option value="no">Bukan driver</option>
+                <option value="yes">Driver (evading)</option>
               </select>
             </Field>
-          </Card>
+          </div>
 
-          <Card accent="gold">
-            <CardTitle tag="4">Senjata Api</CardTitle>
-            <div className="grid gap-3">
-              <Field label="Class Senjata Ilegal">
-                <select
-                  value={input.firearmClass}
-                  onChange={(e) =>
-                    set("firearmClass", e.target.value as PenalInput["firearmClass"])
-                  }
-                  className={FIELD}
-                >
-                  <option value="none">Tidak ada</option>
-                  <option value="1">Class 1</option>
-                  <option value="2">Class 2</option>
-                  <option value="3">Class 3</option>
-                </select>
-              </Field>
+          <CheckField
+            label="Kedapatan membawa barang/uang hasil curian"
+            checked={input.stolenGoods}
+            onChange={(v) => set("stolenGoods", v)}
+          />
+        </Group>
 
-              <div className="grid gap-2.5">
-                <CheckField
-                  label="Pistol/Handgun gunstore tanpa lisensi"
-                  checked={input.unlicensedPistol}
-                  onChange={(v) => set("unlicensedPistol", v)}
-                />
-                <CheckField
-                  label="Shotgun/Rifle gunstore tanpa lisensi"
-                  checked={input.unlicensedLong}
-                  onChange={(v) => set("unlicensedLong", v)}
-                />
-                <CheckField
-                  label="Menggunakan Suppressor"
-                  checked={input.suppressor}
-                  onChange={(v) => set("suppressor", v)}
-                />
-              </div>
-            </div>
-          </Card>
-        </div>
+        <Group tag="2" title="Kekerasan">
+          <CheckField
+            label="Terlibat baku tembak (Gang War)"
+            checked={input.gangWar}
+            onChange={(v) => set("gangWar", v)}
+          />
+          <CheckField
+            label="Menyerang Deputy/Officer dengan senjata"
+            checked={input.assaultDeputy}
+            onChange={(v) => set("assaultDeputy", v)}
+          />
+          <CheckField
+            label="Hasil GSR test positif (menembak)"
+            checked={input.gsr}
+            onChange={(v) => set("gsr", v)}
+          />
+        </Group>
 
-        {/* ---- Right column ---- (see the left column's note) */}
-        <div className="reveal-stack grid gap-[18px]">
-          <Card accent="mint">
-            <CardTitle tag="5">Amunisi &amp; Vest</CardTitle>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <NumberField
-                label="Jumlah Amunisi (butir)"
-                value={input.ammo}
-                onChange={(v) => set("ammo", v)}
-              />
-              <NumberField
-                label="Jumlah Vest"
-                value={input.vest}
-                onChange={(v) => set("vest", v)}
-              />
-            </div>
-          </Card>
+        <Group tag="3" title="Properti">
+          <Field label="Kerusakan Properti">
+            <select
+              value={input.property}
+              onChange={(e) => set("property", e.target.value as PenalInput["property"])}
+              className={FIELD}
+            >
+              <option value="none">Tidak ada</option>
+              <option value="vandalism">Vandalism (properti umum/pribadi)</option>
+              <option value="vandalismGov">Vandalism on Government Property</option>
+              <option value="destructionGov">
+                Destruction of Government Property (mayor)
+              </option>
+            </select>
+          </Field>
+        </Group>
 
-          <Card>
-            <CardTitle tag="6">Narcotics</CardTitle>
-            <div className="grid gap-3">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <NumberField
-                  label="Weed / Opium (gram)"
-                  value={input.sched1}
-                  onChange={(v) => set("sched1", v)}
-                />
-                <NumberField
-                  label="Meth / Cocaine (gram)"
-                  value={input.sched2}
-                  onChange={(v) => set("sched2", v)}
-                />
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <NumberField
-                  label="Alat Produksi (jumlah item)"
-                  value={input.paraphernalia}
-                  onChange={(v) => set("paraphernalia", v)}
-                />
-                <NumberField
-                  label="Poppy (kg)"
-                  value={input.poppy}
-                  onChange={(v) => set("poppy", v)}
-                />
-              </div>
-              <CheckField
-                label="Sedang melakukan proses produksi narkotika"
-                checked={input.manufacturing}
-                onChange={(v) => set("manufacturing", v)}
-              />
-              <CheckField
-                label="Menjual / menawarkan untuk menjual narkotika"
-                checked={input.drugSelling}
-                onChange={(v) => set("drugSelling", v)}
-              />
-            </div>
-          </Card>
+        <Group tag="4" title="Senjata Api">
+          <Field label="Class Senjata Ilegal">
+            <select
+              value={input.firearmClass}
+              onChange={(e) =>
+                set("firearmClass", e.target.value as PenalInput["firearmClass"])
+              }
+              className={FIELD}
+            >
+              <option value="none">Tidak ada</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+            </select>
+          </Field>
 
-          <Card accent="gold">
-            <CardTitle tag="7">Traffic</CardTitle>
-            <div className="grid gap-2.5">
-              <CheckField
-                label="Membawa tabung NOS"
-                checked={input.nosPossession}
-                onChange={(v) => set("nosPossession", v)}
-              />
-              <CheckField
-                label="Menggunakan NOS saat mengemudi"
-                checked={input.nosUsage}
-                onChange={(v) => set("nosUsage", v)}
-              />
-              <CheckField
-                label="Tidak pakai helm/seatbelt"
-                checked={input.noSeatbelt}
-                onChange={(v) => set("noSeatbelt", v)}
-              />
-            </div>
-          </Card>
+          <CheckField
+            label="Pistol/Handgun gunstore tanpa lisensi"
+            checked={input.unlicensedPistol}
+            onChange={(v) => set("unlicensedPistol", v)}
+          />
+          <CheckField
+            label="Shotgun/Rifle gunstore tanpa lisensi"
+            checked={input.unlicensedLong}
+            onChange={(v) => set("unlicensedLong", v)}
+          />
+          <CheckField
+            label="Menggunakan Suppressor"
+            checked={input.suppressor}
+            onChange={(v) => set("suppressor", v)}
+          />
+        </Group>
 
-          <Card>
-            <CardTitle tag="8">Lainnya</CardTitle>
-            <div className="grid gap-3">
-              <CheckField
-                label="Membawa lockpick / hacking device"
-                checked={input.hackingDevice}
-                onChange={(v) => set("hackingDevice", v)}
-              />
-              <CheckField
-                label="Menghalangi / melarikan diri dari penangkapan (Resisting Arrest)"
-                checked={input.resistingArrest}
-                onChange={(v) => set("resistingArrest", v)}
-              />
-              <NumberField
-                label="Uang Merah (illegal money)"
-                value={input.illegalMoney}
-                onChange={(v) => set("illegalMoney", v)}
-              />
-            </div>
-          </Card>
-        </div>
+        <Group tag="5" title="Amunisi & Vest">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <NumberField
+              label="Jumlah Amunisi (butir)"
+              value={input.ammo}
+              onChange={(v) => set("ammo", v)}
+            />
+            <NumberField
+              label="Jumlah Vest"
+              value={input.vest}
+              onChange={(v) => set("vest", v)}
+            />
+          </div>
+        </Group>
+
+        <Group tag="6" title="Narcotics">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <NumberField
+              label="Weed / Opium (gram)"
+              value={input.sched1}
+              onChange={(v) => set("sched1", v)}
+            />
+            <NumberField
+              label="Meth / Cocaine (gram)"
+              value={input.sched2}
+              onChange={(v) => set("sched2", v)}
+            />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <NumberField
+              label="Alat Produksi (jumlah item)"
+              value={input.paraphernalia}
+              onChange={(v) => set("paraphernalia", v)}
+            />
+            <NumberField
+              label="Poppy (kg)"
+              value={input.poppy}
+              onChange={(v) => set("poppy", v)}
+            />
+          </div>
+          <CheckField
+            label="Sedang melakukan proses produksi narkotika"
+            checked={input.manufacturing}
+            onChange={(v) => set("manufacturing", v)}
+          />
+          <CheckField
+            label="Menjual / menawarkan untuk menjual narkotika"
+            checked={input.drugSelling}
+            onChange={(v) => set("drugSelling", v)}
+          />
+        </Group>
+
+        <Group tag="7" title="Traffic">
+          <CheckField
+            label="Membawa tabung NOS"
+            checked={input.nosPossession}
+            onChange={(v) => set("nosPossession", v)}
+          />
+          <CheckField
+            label="Menggunakan NOS saat mengemudi"
+            checked={input.nosUsage}
+            onChange={(v) => set("nosUsage", v)}
+          />
+          <CheckField
+            label="Tidak pakai helm/seatbelt"
+            checked={input.noSeatbelt}
+            onChange={(v) => set("noSeatbelt", v)}
+          />
+        </Group>
+
+        <Group tag="8" title="Lainnya">
+          <CheckField
+            label="Membawa lockpick / hacking device"
+            checked={input.hackingDevice}
+            onChange={(v) => set("hackingDevice", v)}
+          />
+          <CheckField
+            label="Menghalangi / melarikan diri dari penangkapan (Resisting Arrest)"
+            checked={input.resistingArrest}
+            onChange={(v) => set("resistingArrest", v)}
+          />
+          <NumberField
+            label="Uang Merah (illegal money)"
+            value={input.illegalMoney}
+            onChange={(v) => set("illegalMoney", v)}
+          />
+        </Group>
       </div>
 
-      {/* ---- Output ---- */}
-      <Card accent="mint">
-        <CardTitle tag={`${total} pasal`}>Pasal yang Dikenakan</CardTitle>
+      {/* ---- Charge sheet ----
+          The one place the hard offset shadow appears. `charge-sheet` is what
+          the print stylesheet uses to drop it. Sticky only from 980px up; below
+          that it stacks under the form and the floating button below scrolls
+          back to it. */}
+      <aside
+        id="charge-sheet"
+        aria-live="polite"
+        className="charge-sheet rounded-sm border border-outline bg-surface p-4 shadow-[6px_6px_0_var(--border)] min-[980px]:sticky min-[980px]:top-[132px]"
+      >
+        <h3 className="font-display text-[20px] font-semibold text-text">
+          Pasal yang Dikenakan
+        </h3>
 
         {total === 0 ? (
-          <p className="text-[12.5px] text-text-faint">
+          <p className="mt-2.5 text-[13px] leading-relaxed text-text-dim">
             Isi form di atas — daftar pasal muncul di sini secara otomatis.
           </p>
         ) : (
-          <div className="grid gap-4">
+          <div className="mt-3 grid gap-3">
             {groups.map((group) => (
               <div key={group.group}>
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-text-faint">
+                <div className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.08em] text-text-dim">
                   {group.group}
                 </div>
-                <ul className="grid gap-1.5">
+                <ul>
                   {group.items.map((item) => {
                     const description = describeCharge(item.name);
                     return (
                       <li
                         key={item.name}
-                        className="rounded-sm border border-border bg-surface-2 px-3 py-2 text-[13px] text-text"
+                        className="border-b border-dotted border-text-dim py-2 font-mono text-[13px] leading-snug text-text"
                       >
-                        <div className="flex items-center gap-2">
-                          <span
-                            aria-hidden
-                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-coral"
-                          />
-                          {item.name}
-                        </div>
+                        {item.name}
                         {description ? (
-                          <p className="mt-1 pl-3.5 text-[12px] leading-snug text-text-faint">
+                          <p className="mt-1 font-sans text-[11.5px] leading-snug text-text-dim">
                             {description}
                           </p>
                         ) : null}
@@ -396,25 +404,37 @@ export function PenalCodeGenerator() {
           </div>
         )}
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-2.5">
+          <span className="mr-auto font-mono text-[13px] font-semibold text-text">
+            {total} pasal
+          </span>
+          <button type="button" onClick={reset} className={BTN_OUTLINE}>
+            Reset
+          </button>
           <button
             type="button"
             onClick={copy}
             disabled={total === 0}
             className={BTN_GOLD}
           >
-            {copied ? "Tersalin!" : "Copy Daftar Pasal"}
+            {copied ? "Tersalin!" : "Salin daftar pasal"}
           </button>
-          <button type="button" onClick={reset} className={BTN_MINT}>
-            Reset
-          </button>
-          {total === 0 && !copied ? null : (
-            <span aria-live="polite" className="text-[12px] text-mint">
-              {copied ? "Tersalin ke clipboard." : ""}
-            </span>
-          )}
         </div>
-      </Card>
+      </aside>
+
+      {/* Mobile only: the sheet is below the form at these widths, so this is
+          the way back to it. Clears the bottom nav from task-08. */}
+      <button
+        type="button"
+        onClick={() =>
+          document
+            .getElementById("charge-sheet")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+        className="charge-fab fixed bottom-[calc(64px+env(safe-area-inset-bottom,0px))] right-3.5 z-30 rounded-sm border border-outline bg-gold px-3.5 py-2 font-mono text-[13px] font-semibold text-on-accent min-[760px]:hidden"
+      >
+        {total} pasal
+      </button>
     </div>
   );
 }

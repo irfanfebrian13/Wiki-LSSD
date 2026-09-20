@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   buildFullReport,
@@ -25,7 +25,7 @@ import {
 /**
  * Patrol Report Generator.
  *
- * The form is redesigned; the generated BBCode is NOT. `lib/bbcode.ts` is a
+ * The form is restyled; the generated BBCode is NOT. `lib/bbcode.ts` is a
  * verbatim port of the original logic and is pinned by `lib/bbcode.test.ts`,
  * because the output gets pasted into a forum post.
  */
@@ -128,10 +128,14 @@ function EntryFields({ legend, entry, onChange }: EntryFieldsProps) {
   );
 }
 
+type ReportTab = "output" | "preview";
+
 export function PatrolReportForm() {
   const [input, setInput] = useState<ReportInput>(EMPTY_REPORT);
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState<ReportTab>("output");
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const preview = useMemo(() => (output ? bbToHtml(output) : ""), [output]);
 
@@ -171,8 +175,25 @@ export function PatrolReportForm() {
     { key: "badge", label: "Badge", placeholder: "Badge number" },
   ];
 
+  const TABS: Array<{ id: ReportTab; label: string }> = [
+    { id: "output", label: "Output" },
+    { id: "preview", label: "Preview" },
+  ];
+
+  /* Arrow keys move the selection in a real tablist, so the roving focus is
+     mandatory once `role="tab"` is used — a tablist that ignores the arrows is
+     worse than plain buttons. */
+  const onTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+    const delta = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (delta === 0) return;
+    e.preventDefault();
+    const next = (index + delta + TABS.length) % TABS.length;
+    setTab(TABS[next].id);
+    tabRefs.current[next]?.focus();
+  };
+
   return (
-    <div className="grid gap-[18px]">
+    <div className="grid gap-6">
       <Card accent="gold">
         <CardTitle tag="1">Deputy Information</CardTitle>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -192,7 +213,7 @@ export function PatrolReportForm() {
       {/* `reveal-stack` on both grids: the section's own stack sees each grid as
           a single child, so the two report cards would otherwise enter together
           rather than staggered. */}
-      <div className="reveal-stack grid gap-[18px] lg:grid-cols-2">
+      <div className="reveal-stack grid gap-6 lg:grid-cols-2">
         <EntryFields
           legend="First Report"
           entry={input.first}
@@ -217,29 +238,70 @@ export function PatrolReportForm() {
         </button>
       </div>
 
-      <Card accent="mint">
-        <CardTitle tag={output ? "BBCode" : "empty"}>Generated Output</CardTitle>
-        {output ? (
-          <OutputBox>{output}</OutputBox>
-        ) : (
-          <p className="text-[12.5px] text-text-faint">
-            Isi form di atas lalu tekan Generate — BBCode muncul di sini.
-          </p>
-        )}
-      </Card>
+      {/* Output and Preview are tabs over one panel. The preview stays live:
+          `preview` is derived from `output` with `useMemo`, so regenerating
+          while the Preview tab is open updates it without a manual switch. */}
+      <div className="rounded-sm border border-border bg-surface">
+        <div role="tablist" aria-label="Hasil laporan" className="flex border-b border-border">
+          {TABS.map((t, i) => (
+            <button
+              key={t.id}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
+              role="tab"
+              type="button"
+              id={`report-tab-${t.id}`}
+              aria-selected={tab === t.id}
+              aria-controls={`report-panel-${t.id}`}
+              tabIndex={tab === t.id ? 0 : -1}
+              onClick={() => setTab(t.id)}
+              onKeyDown={(e) => onTabKeyDown(e, i)}
+              className={`px-4 py-2.5 font-mono text-[12.5px] font-semibold uppercase tracking-[0.06em] transition-colors ${
+                tab === t.id
+                  ? "border-b-2 border-b-gold text-text"
+                  : "text-text-dim hover:text-text"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-      <Card>
-        <CardTitle tag="live">Preview</CardTitle>
-        {/*
-          The one place generated HTML is injected. `bbToHtml` renders the
-          deputy's own form input back to their own browser — the same trust
-          model as the original build. Never extend this to lib/data.ts content.
-        */}
         <div
-          className="report-preview min-h-[44px] rounded-md border border-border bg-surface-2 px-4 py-3.5"
-          dangerouslySetInnerHTML={{ __html: preview }}
-        />
-      </Card>
+          role="tabpanel"
+          id="report-panel-output"
+          aria-labelledby="report-tab-output"
+          hidden={tab !== "output"}
+          className="p-4"
+        >
+          {output ? (
+            <OutputBox>{output}</OutputBox>
+          ) : (
+            <p className="text-[12.5px] text-text-faint">
+              Isi form di atas lalu tekan Generate — BBCode muncul di sini.
+            </p>
+          )}
+        </div>
+
+        <div
+          role="tabpanel"
+          id="report-panel-preview"
+          aria-labelledby="report-tab-preview"
+          hidden={tab !== "preview"}
+          className="p-4"
+        >
+          {/*
+            The one place generated HTML is injected. `bbToHtml` renders the
+            deputy's own form input back to their own browser — the same trust
+            model as the original build. Never extend this to lib/data.ts content.
+          */}
+          <div
+            className="report-preview min-h-[44px] rounded-sm border border-border bg-surface-2 px-4 py-3.5"
+            dangerouslySetInnerHTML={{ __html: preview }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
