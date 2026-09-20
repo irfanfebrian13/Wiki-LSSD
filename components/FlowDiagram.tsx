@@ -215,7 +215,11 @@ export function FlowDiagram({
   const label = `Alur radio — ${tracks.map((t) => t.title).join("; ")}`;
 
   return (
-    <div>
+    /* `min-w-0` on the outer wrapper: a plain block child defaults to
+       `min-width: auto`, so the 640px SVG inside would widen this element and
+       the scroll container below would never get the chance to scroll. The
+       zero minimum is what hands the overflow to `overflow-x-auto`. */
+    <div className="min-w-0">
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
 
       {/* `overflow-x-auto` plus the SVG's `min-w-[640px]` is what keeps the

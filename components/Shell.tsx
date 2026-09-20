@@ -393,9 +393,13 @@ function BackToTop() {
       aria-label="Kembali ke atas"
       /* Hidden by `visibility` as well as opacity so it is out of the tab order
          and unreachable by screen readers while off-screen — an invisible but
-         focusable button is a real trap for keyboard users. Sits above the
-         mobile bottom nav below 760px. */
-      className={`back-to-top fixed right-5 z-30 grid h-10 w-10 place-items-center rounded-sm border border-border-strong bg-surface text-text transition-[opacity,transform,visibility] duration-200 hover:border-gold hover:text-gold bottom-[calc(80px+env(safe-area-inset-bottom,0px))] min-[760px]:bottom-5 ${
+         focusable button is a real trap for keyboard users.
+
+         Sits above the mobile bottom nav below 760px, and higher still than the
+         generator's floating "n pasal" button: the two are both pinned to the
+         bottom right, and stacking them at the same offset would let this one
+         swallow the other's taps. */
+      className={`back-to-top fixed right-5 z-30 grid h-10 w-10 place-items-center rounded-sm border border-border-strong bg-surface text-text transition-[opacity,transform,visibility] duration-200 hover:border-gold hover:text-gold bottom-[calc(132px+env(safe-area-inset-bottom,0px))] min-[760px]:bottom-5 ${
         shown
           ? "visible translate-y-0 opacity-100"
           : "invisible pointer-events-none translate-y-2.5 opacity-0"

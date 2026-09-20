@@ -20,7 +20,12 @@ export function TabStrip({
   onSelect: (slug: string) => void;
 }) {
   return (
-    <nav aria-label="Kategori" className="tab-strip border-b border-border bg-bg-2">
+    <nav
+      aria-label="Kategori"
+      /* Below 760px the whole strip gives way to the bottom nav — that is the
+         brief's mobile rule, and the two must not both show. */
+      className="tab-strip border-b border-border bg-bg-2 max-[759px]:hidden"
+    >
       <div className="mx-auto flex max-w-[1080px] gap-1 overflow-x-auto px-6 pt-2">
         {chapters.map((chapter) => {
           const active = chapter.slug === activeSlug;

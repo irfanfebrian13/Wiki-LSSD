@@ -45,7 +45,11 @@ export const SectionView = memo(function SectionView({
         {section.title}
       </h2>
 
-      <div className="chapter-grid mt-5 grid gap-12 min-[980px]:grid-cols-[minmax(0,1fr)_220px]">
+      {/* `minmax(0,1fr)` rather than a bare grid: without the explicit zero
+          minimum the column is sized to its widest child's min-content, and the
+          flow diagram's 640px floor would then widen the whole page instead of
+          scrolling inside its own container. */}
+      <div className="chapter-grid mt-5 grid grid-cols-[minmax(0,1fr)] gap-12 min-[980px]:grid-cols-[minmax(0,1fr)_220px]">
         <div className="reveal-stack grid gap-[18px]">
           {content.map((block, i) => (
             <BlockRenderer key={i} block={block} section={section} />
