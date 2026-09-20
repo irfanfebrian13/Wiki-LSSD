@@ -78,24 +78,24 @@ tree buildable at every point.
 ## Task Status
 
 ### Wave 1
-- [ ] [task-01-tokens-and-fonts](./tasks/task-01-tokens-and-fonts.md) — Additive tokens, 2–3px radius, four new fonts, print stylesheet
-- [ ] [task-02-presentation-helpers](./tasks/task-02-presentation-helpers.md) — Chapter/category derivation, hash resolution, tier labels, penal row splitting
+- [x] [task-01-tokens-and-fonts](./tasks/task-01-tokens-and-fonts.md) — Additive tokens, 2–3px radius, four new fonts, print stylesheet
+- [x] [task-02-presentation-helpers](./tasks/task-02-presentation-helpers.md) — Chapter/category derivation, hash resolution, tier labels, penal row splitting
 
 ### Wave 2
-- [ ] [task-03-ui-and-readonly-blocks](./tasks/task-03-ui-and-readonly-blocks.md) — Hairline primitives and all read-only content blocks
-- [ ] [task-04-dedicated-components](./tasks/task-04-dedicated-components.md) — Ten Codes, rank ladder, procedures, inline SVG flow diagram
-- [ ] [task-05-client-state-theme-motion](./tasks/task-05-client-state-theme-motion.md) — Callsign/language store, theme toggle, motion trim
+- [x] [task-03-ui-and-readonly-blocks](./tasks/task-03-ui-and-readonly-blocks.md) — Hairline primitives and all read-only content blocks
+- [x] [task-04-dedicated-components](./tasks/task-04-dedicated-components.md) — Ten Codes, rank ladder, procedures, inline SVG flow diagram
+- [x] [task-05-client-state-theme-motion](./tasks/task-05-client-state-theme-motion.md) — Callsign/language store, theme toggle, motion trim
 
 ### Wave 3
-- [ ] [task-06-transmission-block](./tasks/task-06-transmission-block.md) — Radiocall rendered as a transmission with placeholder chips and EN/ID
-- [ ] [task-07-generators-restyle](./tasks/task-07-generators-restyle.md) — Charge sheet and report output tabs, logic untouched
-- [ ] [task-08-chrome-components](./tasks/task-08-chrome-components.md) — Tab strip, cover + TOC, bottom nav, command palette
+- [x] [task-06-transmission-block](./tasks/task-06-transmission-block.md) — Radiocall rendered as a transmission with placeholder chips and EN/ID
+- [x] [task-07-generators-restyle](./tasks/task-07-generators-restyle.md) — Charge sheet and report output tabs, logic untouched
+- [x] [task-08-chrome-components](./tasks/task-08-chrome-components.md) — Tab strip, cover + TOC, bottom nav, command palette
 
 ### Wave 4
-- [ ] [task-09-section-view-and-renderer](./tasks/task-09-section-view-and-renderer.md) — 26px headings, 220px margin column, block routing
+- [x] [task-09-section-view-and-renderer](./tasks/task-09-section-view-and-renderer.md) — 26px headings, 220px margin column, block routing
 
 ### Wave 5
-- [ ] [task-10-shell-rewrite](./tasks/task-10-shell-rewrite.md) — Header band, category routing, assemble the shell, delete Sidebar/Hero
+- [x] [task-10-shell-rewrite](./tasks/task-10-shell-rewrite.md) — Header band, category routing, assemble the shell, delete Sidebar/Hero
 
 ### Wave 6
-- [ ] [task-11-verification](./tasks/task-11-verification.md) — Build, lint, typecheck, tests, and the three proofs
+- [x] [task-11-verification](./tasks/task-11-verification.md) — Build, lint, typecheck, tests, and the three proofs

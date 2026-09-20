@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Field Manual Verification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* ============================================================================
+   Tokens. The bare :root carries the complete light palette; the dark blocks
+   only redefine values. These are the pocketbook's own tokens — the report is
+   about them, so it wears them.
+   ========================================================================= */
+:root {
+  color-scheme: light;
+
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --panel-2: #f1f3f7;
+  --ink: #12141a;
+  --ink-2: #5c6472;
+  --rule: rgba(12, 14, 18, 0.1);
+  --rule-2: rgba(12, 14, 18, 0.22);
+
+  --gold: #8a6314;
+  --gold-bg: rgba(255, 198, 92, 0.18);
+  --mint: #0d6e64;
+  --mint-bg: rgba(94, 234, 212, 0.2);
+  --coral: #b3242a;
+  --coral-bg: rgba(255, 107, 107, 0.14);
+
+  --tx: #2a3340;
+  --on-tx: #edeff3;
+
+  --serif: Fraunces, Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #0d1015;
+    --panel: #171c24;
+    --panel-2: #1d232d;
+    --ink: #edeff3;
+    --ink-2: #8b93a1;
+    --rule: rgba(255, 255, 255, 0.07);
+    --rule-2: rgba(255, 255, 255, 0.12);
+
+    --gold: #ffc65c;
+    --gold-bg: rgba(255, 198, 92, 0.14);
+    --mint: #5eead4;
+    --mint-bg: rgba(94, 234, 212, 0.14);
+    --coral: #ff6b6b;
+    --coral-bg: rgba(255, 107, 107, 0.14);
+
+    --tx: #2b3444;
+    --on-tx: #edeff3;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0d1015;
+  --panel: #171c24;
+  --panel-2: #1d232d;
+  --ink: #edeff3;
+  --ink-2: #8b93a1;
+  --rule: rgba(255, 255, 255, 0.07);
+  --rule-2: rgba(255, 255, 255, 0.12);
+
+  --gold: #ffc65c;
+  --gold-bg: rgba(255, 198, 92, 0.14);
+  --mint: #5eead4;
+  --mint-bg: rgba(94, 234, 212, 0.14);
+  --coral: #ff6b6b;
+  --coral-bg: rgba(255, 107, 107, 0.14);
+
+  --tx: #2b3444;
+  --on-tx: #edeff3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.62 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-block: 44px 96px;
+  padding-inline: 20px;
+}
+
+/* ---- Masthead ---- */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 3px double var(--rule-2);
+  padding-bottom: 22px;
+}
+.kicker {
+  margin: 0 0 10px;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+h1 {
+  margin: 0 0 10px;
+  font: 600 clamp(30px, 5.5vw, 44px)/1.08 var(--serif);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.standfirst { margin: 0; max-width: 60ch; color: var(--ink-2); }
+.stamp {
+  flex: none;
+  border: 1px solid var(--rule-2);
+  border-radius: 2px;
+  padding: 10px 12px;
+  font: 500 11.5px/1.5 var(--mono);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.stamp b { display: block; color: var(--ink); font-weight: 600; }
+
+/* ---- Summary figures ---- */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 1px;
+  margin: 26px 0 0;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.figure { background: var(--panel); padding: 14px 16px; }
+.figure dt {
+  font: 600 10.5px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.figure dd {
+  margin: 6px 0 0;
+  font: 600 27px/1.05 var(--serif);
+  font-variant-numeric: tabular-nums;
+}
+.figure .of { font-size: 16px; color: var(--ink-2); font-weight: 400; }
+.figure .sub { display: block; margin-top: 3px; font: 400 12px var(--sans); color: var(--ink-2); }
+
+/* ---- Sections ---- */
+section { margin-top: 46px; }
+h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 6px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--rule);
+  font: 600 21px/1.25 var(--serif);
+  letter-spacing: -0.005em;
+}
+h2 .n {
+  flex: none;
+  font: 600 12px var(--mono);
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+h3 {
+  margin: 26px 0 6px;
+  font: 600 14.5px/1.35 var(--sans);
+}
+p { margin: 11px 0; }
+.lede { color: var(--ink-2); }
+
+/* ---- Tables ---- */
+.scroll { overflow-x: auto; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td {
+  text-align: left;
+  padding: 9px 12px 9px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th:last-child, td:last-child { padding-right: 0; }
+th {
+  font: 600 10.5px var(--mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+td.m, .m { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* ---- Verdict chips ---- */
+.verdict {
+  display: inline-block;
+  font: 600 10px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.v-pass { background: var(--mint-bg); color: var(--mint); }
+.v-fail { background: var(--coral-bg); color: var(--coral); }
+.v-warn { background: var(--gold-bg); color: var(--gold); }
+
+/* ---- Command output ---- */
+pre {
+  margin: 14px 0;
+  padding: 13px 15px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-2);
+  border-radius: 2px;
+  overflow-x: auto;
+  font: 12.5px/1.6 var(--mono);
+  color: var(--ink);
+}
+pre .c { color: var(--ink-2); }
+pre .ok { color: var(--mint); }
+pre .no { color: var(--coral); }
+
+/* ---- Note ---- */
+.note {
+  margin: 20px 0;
+  padding: 2px 0 2px 15px;
+  border-left: 3px solid var(--gold);
+}
+.note b { display: block; font: 600 12px var(--mono); color: var(--gold); margin-bottom: 3px; }
+
+/* ---- Definition rows for the fallback list ---- */
+.fallbacks { border-top: 1px solid var(--rule); margin: 14px 0; }
+.fallback {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 4px 16px;
+  border-bottom: 1px solid var(--rule);
+  padding: 13px 0;
+}
+.fallback .idx { font: 500 13px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.fallback .claim { font-weight: 600; }
+.fallback .body { color: var(--ink-2); font-size: 14.5px; margin-top: 3px; }
+.fallback .body .verdict { margin-right: 7px; }
+
+/* ---- Commit log ---- */
+.log { border-top: 1px solid var(--rule); margin: 14px 0; }
+.commit {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 14px;
+  border-bottom: 1px solid var(--rule);
+  padding: 9px 0;
+  align-items: baseline;
+}
+.commit .sha { font: 500 12.5px var(--mono); color: var(--gold); }
+.commit .msg { font-size: 14.5px; }
+
+footer {
+  margin-top: 52px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+@media (max-width: 520px) {
+  .commit { grid-template-columns: 1fr; gap: 2px; }
+  .fallback { grid-template-columns: 26px 1fr; gap: 2px 10px; }
+  h2 { flex-wrap: wrap; gap: 4px 10px; }
+}
+@media print {
+  body { background: #fff; }
+  .wrap { padding-block: 0; }
+  pre { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <p class="kicker">Task 11 · Verification</p>
+      <h1>Field Manual Restyle</h1>
+      <p class="standfirst">
+        End-to-end verification of the presentation-layer restyle of the LSSD Deputy
+        Pocketbook — the four automated gates, the three proofs that no content or logic
+        moved, and the manual passes for both themes, three widths, keyboard and print.
+      </p>
+    </div>
+    <p class="stamp">
+      <b>main</b>
+      114c118
+    </p>
+  </header>
+
+  <dl class="figures">
+    <div class="figure">
+      <dt>Tests</dt>
+      <dd>42 <span class="of">/ 42</span><span class="sub">0 failing</span></dd>
+    </div>
+    <div class="figure">
+      <dt>lib/ diff</dt>
+      <dd>0<span class="sub">files touched</span></dd>
+    </div>
+    <div class="figure">
+      <dt>Routes</dt>
+      <dd>9 <span class="of">/ 9</span><span class="sub">resolve correctly</span></dd>
+    </div>
+    <div class="figure">
+      <dt>Console errors</dt>
+      <dd>0<span class="sub">no hydration warnings</span></dd>
+    </div>
+  </dl>
+
+  <section>
+    <h2><span class="n">01</span> The four automated gates</h2>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Result</th><th>Detail</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="m">npm run lint</td><td class="n"><span class="verdict v-pass">pass</span></td><td>eslint clean, exit 0</td></tr>
+          <tr><td class="m">npx tsc --noEmit</td><td class="n"><span class="verdict v-pass">pass</span></td><td>exit 0</td></tr>
+          <tr><td class="m">npm test</td><td class="n"><span class="verdict v-pass">pass</span></td><td>42 passing, 0 failing</td></tr>
+          <tr><td class="m">npm run build</td><td class="n"><span class="verdict v-pass">pass</span></td><td>compiled successfully; <span class="m">/</span> prerendered as static</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="lede">
+      The 42 tests are the load-bearing part. <span class="m">lib/penal.test.ts</span> pins every
+      Penal Code threshold, <span class="m">lib/bbcode.test.ts</span> pins the generated BBCode
+      byte-for-byte, and <span class="m">lib/section-icons.test.ts</span> asserts icon coverage.
+      No test was edited to make it pass.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span> Proof one — no content or data changed</h2>
+
+    <p class="lede">
+      Every word, code, script, rank, weapon and charge lives under <span class="m">lib/</span>, so an
+      empty diff there is what proves nothing moved.
+    </p>
+
+    <pre><span class="c">$ git status --short lib/</span>
+<span class="c">(no output)</span>
+
+<span class="c">$ git diff --stat lib/</span>
+<span class="c">(no output)</span>
+
+<span class="c">$ git diff 97085cc..HEAD -- package.json package-lock.json</span>
+<span class="c">(no output — no dependency was added)</span>
+
+<span class="c">$ git diff --stat 97085cc..HEAD</span>
+41 files changed, 6636 insertions(+), 1581 deletions(-)
+<span class="c">— every source path under app/ or components/</span></pre>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span> Proof two — routes, anchors and metadata</h2>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>URL</th><th>Expected</th><th>Observed</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="m">/</td><td>Cover, 7 chapters in the TOC</td><td class="m">cover · 7 rows · 3/4/12/6/2/8/2</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#ten-codes</td><td>Komunikasi, scrolled to Ten Codes</td><td class="m">h1 Komunikasi · anchor present</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#patrol-report</td><td>Tools, scrolled to the report generator</td><td class="m">h1 Form Helper · anchor present</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#penal-generator</td><td>Tools, scrolled to the penal generator</td><td class="m">h1 Form Helper · anchor present</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#radio-quick-flow</td><td>Radio, scrolled to the flow diagram</td><td class="m">h1 Radio · anchor present</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#senjata-illegal</td><td>Senjata — a category not in the bottom nav</td><td class="m">h1 Senjata · tab active</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#mdt-process</td><td>Prosedur</td><td class="m">h1 Prosedur · anchor present</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#penal-code</td><td>Penal Code — a category slug, not a section</td><td class="m">h1 Penal Code · no scroll</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td class="m">/#does-not-exist</td><td>Cover — an unknown hash falls back</td><td class="m">cover</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre><span class="c">title            </span>LSSD Deputy Pocketbook
+<span class="c">description      </span>Los Santos Sheriff Department — Deputy Pocketbook. Ten codes, …
+<span class="c">applicationName  </span>LSSD Pocketbook
+<span class="c">theme-color      </span>#0c0e12
+<span class="c">icon             </span>/sheriff.png  <span class="ok">→ HTTP 200</span>
+<span class="c">lang             </span>id
+<span class="c">console errors   </span>0 <span class="c">(across all nine URLs)</span></pre>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span> Proof three — the generators</h2>
+
+    <h3>Penal Code Generator</h3>
+    <p class="lede">
+      Boundary case: ammo 300, vest 10, weed 60, meth 101, illegal money 400 000. The charge sheet
+      updated live and produced exactly the expected charges, with the count matching the row count.
+    </p>
+
+    <pre><span class="ok">✓</span> Illegal Distribution of Ammunition        <span class="c">(not Unlawful Possession)</span>
+<span class="ok">✓</span> Felony Possession of Bulletproof Vest (Court Verdict)   <span class="c">at exactly 10</span>
+<span class="ok">✓</span> Misdemeanor Possession of Schedule I        <span class="c">at exactly 60</span>
+<span class="ok">✓</span> Felony Possession of Schedule II            <span class="c">at exactly 101</span>
+<span class="ok">✓</span> First Degree Possession of Illegal Money (Court Verdict)  <span class="c">at 400 000</span>
+
+5 pasal  ·  Reset  ·  Salin daftar pasal
+<span class="ok">✓</span> clipboard == formatPenalCode(groups)
+<span class="ok">✓</span> Reset clears the form and the sheet</pre>
+
+    <h3>Patrol Report Generator</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Check</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Generate produces BBCode</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Copy BBCode puts the exact output on the clipboard — 902 characters, identical</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Preview tab renders the same content</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Regenerating while Preview is open updates it — the live behaviour</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>ArrowRight moves Output → Preview; <span class="m">aria-selected</span> and <span class="m">hidden</span> follow</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Clear resets everything</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span> Manual pass — both themes</h2>
+
+    <p class="lede">
+      Contrast measured against the page background in each theme. WCAG AA for body text is 4.5:1.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Element</th><th>Dark</th><th>Light</th></tr></thead>
+        <tbody>
+          <tr><td>Body text</td><td class="m">16.55:1 <span class="verdict v-pass">AA</span></td><td class="m">16.74:1 <span class="verdict v-pass">AA</span></td></tr>
+          <tr><td>Muted text</td><td class="m">6.16:1 <span class="verdict v-pass">AA</span></td><td class="m">5.42:1 <span class="verdict v-pass">AA</span></td></tr>
+          <tr><td>Code — mint</td><td class="m">12.88:1 <span class="verdict v-pass">AA</span></td><td class="m">5.56:1 <span class="verdict v-pass">AA</span></td></tr>
+          <tr><td>Amber accent</td><td class="m">12.24:1 <span class="verdict v-pass">AA</span></td><td class="m">4.93:1 <span class="verdict v-pass">AA</span></td></tr>
+          <tr><td>Red warning and court tag</td><td class="m">6.87:1 <span class="verdict v-pass">AA</span></td><td class="m">5.96:1 <span class="verdict v-pass">AA</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="lede">
+      The transmission header strip measures <span class="m">rgb(43,52,68)</span> in dark and
+      <span class="m">rgb(42,51,64)</span> in light — deliberately dark in both — carrying cream
+      <span class="m">rgb(237,239,243)</span> text. The selected command-palette row uses the same
+      <span class="m">--tx</span> / <span class="m">--on-tx</span> pair, so it stays legible in both
+      themes. Focus rings are visible on every interactive element checked.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span> Manual pass — three widths</h2>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Check</th><th>360px</th><th>768px</th><th>1280px</th></tr></thead>
+        <tbody>
+          <tr><td>Page-body horizontal scroll</td><td class="m"><span class="verdict v-pass">none</span></td><td class="m"><span class="verdict v-pass">none</span></td><td class="m"><span class="verdict v-pass">none</span></td></tr>
+          <tr><td>Tab strip / bottom nav</td><td class="m">hidden / shown</td><td class="m">shown / hidden</td><td class="m">shown / hidden</td></tr>
+          <tr><td>Chapter grid</td><td class="m">1 col · 328px</td><td class="m">1 col · 720px</td><td class="m">2 col · 764 + 220px</td></tr>
+          <tr><td>Weapons grid</td><td class="m">1 col</td><td class="m">2 col</td><td class="m">3 col</td></tr>
+          <tr><td>Charge sheet</td><td class="m">stacks under the form</td><td colspan="2" class="m">sticky at top 132px</td></tr>
+          <tr><td>Cover title — <span class="m">clamp</span></td><td class="m">46px</td><td class="m">65.28px</td><td class="m">88px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="lede">
+      The flow diagram scrolls inside its own container at every width; the SVG carries
+      <span class="m">min-width: 640px</span> and never widens the page.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">07</span> Manual pass — keyboard</h2>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Control</th><th>Behaviour verified</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Skip link</td><td>“Lompat ke konten” is the first Tab stop</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Category tabs</td><td>Focusable, activate on Enter and Space</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Ten-code rows</td><td>Focusable; Enter copies and shows the toast</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Procedure rows</td><td>Toggle on Enter and Space; Space does not scroll the page</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Command palette</td><td>Ctrl+K and <span class="m">/</span> open it; input focused; arrows move; Enter navigates and closes; Esc closes</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Callsign field</td><td><span class="m">/</span> types normally instead of opening the palette</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>EN/ID toggle</td><td>Both buttons reachable; switches every transmission at once</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Theme toggle</td><td>Reachable and operable; label describes the switch</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+          <tr><td>Report tabs</td><td>ArrowLeft and ArrowRight move between Output and Preview</td><td class="n"><span class="verdict v-pass">pass</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">08</span> Manual pass — print</h2>
+
+    <p class="lede">With print media emulated, every element that exists is hidden and the layout collapses.</p>
+
+    <pre>.app-header        <span class="no">none</span>      .reading-progress   <span class="no">none</span>
+.tab-strip         <span class="no">none</span>      .back-to-top        <span class="no">none</span>
+.bottom-nav        <span class="no">none</span>      .chapter-grid       <span class="ok">block</span>
+.charge-fab        <span class="no">none</span>      .charge-sheet shadow <span class="ok">none</span>
+.toast             <span class="no">none</span>      body::before        <span class="no">none</span></pre>
+
+    <p class="lede">Content stays readable — 1 875 characters of text on the penal generator page.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">09</span> Hydration</h2>
+
+    <p class="lede">
+      Hard-reloaded <span class="m">/</span>, <span class="m">/#ten-codes</span>,
+      <span class="m">/#radio-traffic-stop</span>, <span class="m">/#penal-generator</span> and
+      <span class="m">/#patrol-report</span> with a stored theme, callsign and language already in
+      <span class="m">localStorage</span>. Result: <b>0</b> hydration warnings and 0 console errors,
+      with all three stored values adopted correctly — theme <span class="m">light</span>, callsign
+      <span class="m">61-Robert-210</span>, language <span class="m">Indonesia</span>.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">10</span> Defects found and fixed</h2>
+
+    <p class="lede">
+      Three real defects surfaced during the browser pass. All three were presentation-only and were
+      fixed before this report.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Defect</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Page body scrolled sideways at 360px — 686px wide</td>
+            <td>The flow diagram’s 640px floor widened its ancestors: the wrapping grid column and the diagram’s outer div both defaulted to <span class="m">min-width: auto</span>, so <span class="m">overflow-x: auto</span> never engaged.</td>
+            <td><span class="m">grid-cols-[minmax(0,1fr)]</span> on the chapter grid, and <span class="m">min-w-0</span> on the diagram wrapper.</td>
+          </tr>
+          <tr>
+            <td>Tab strip visible below 760px, where the bottom nav should replace it</td>
+            <td>The mobile hide rule was never applied to the strip.</td>
+            <td><span class="m">max-[759px]:hidden</span> on the strip.</td>
+          </tr>
+          <tr>
+            <td>The “n pasal” floating button was untappable on mobile</td>
+            <td>The back-to-top button sat at the same bottom-right offset and swallowed its taps.</td>
+            <td>Raised back-to-top below 760px; verified the two no longer overlap and the fab scrolls the sheet into view.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="lede">No defect required a change to <span class="m">lib/</span>. Every one was a class or layout fix in <span class="m">components/</span>.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">11</span> Fallback report</h2>
+
+    <p class="lede">Each of the ten known planning-time candidates, confirmed or corrected.</p>
+
+    <div class="fallbacks">
+      <div class="fallback">
+        <span class="idx">01</span>
+        <div>
+          <span class="claim">prefers-reduced-motion is not honoured</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>A deliberate deviation from the brief, matching the repo’s documented unconditional-motion policy and commit 722b380. No reduced-motion block and no motion-safe / motion-reduce variants exist.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">02</span>
+        <div>
+          <span class="claim">Chapter = category, not section</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>7 chapters over 37 sections. The TOC lines up 1:1 and every count is computed from the data, never hard-coded.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">03</span>
+        <div>
+          <span class="claim">Two new colour values plus --on-tx</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>Only --tx, --outline and --on-tx were added. The brief’s full palette was not adopted.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">04</span>
+        <div>
+          <span class="claim">Margin columns are per-section, not per-chapter</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>Because a chapter is a category, “below 980px the margin flows below” is implemented below the section.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">05</span>
+        <div>
+          <span class="claim">Tier labels come from the legend block’s desc</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>5 groups; all 13 ranks appear exactly once; no label is invented.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">06</span>
+        <div>
+          <span class="claim">Penal rows split on “ — ”</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>Verified against all 35 penal bullets — every one splits cleanly. A bullet without the separator degrades to a bare term.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">07</span>
+        <div>
+          <span class="claim">Flow entry/hot nodes are the first node of each track</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>5 tracks, 28 nodes, 24 connectors; every label traces to the data.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">08</span>
+        <div>
+          <span class="claim">The callout’s “Peringatan” label is a UI label</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>Callout blocks carry no title of their own, so the label is the site’s own word for the concept rather than invented content.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">09</span>
+        <div>
+          <span class="claim">The cover’s intro paragraph was moved from Hero.tsx</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>Carried over verbatim before the file was deleted.</p>
+        </div>
+      </div>
+      <div class="fallback">
+        <span class="idx">10</span>
+        <div>
+          <span class="claim">Copy button renamed to “Salin daftar pasal”</span>
+          <p class="body"><span class="verdict v-pass">confirmed</span>A UI label, matching the brief. The copied string itself is unchanged and still pinned by the tests.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Also worth recording</b>
+      <p style="margin:6px 0 0">
+        <span class="m">design-reference/</span> was documented as gitignored but was not. It now has an
+        explicit <span class="m">.gitignore</span> entry, so the mockup stays local and untracked as the
+        spec intended. <span class="m">.playwright-cli/</span> session state is ignored for the same reason.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">12</span> Commits</h2>
+
+    <div class="log">
+      <div class="commit"><span class="sha">114c118</span><span class="msg">fix: stop the page widening and the mobile buttons overlapping</span></div>
+      <div class="commit"><span class="sha">a23fb6b</span><span class="msg">feat: rewrite the shell as the Field Manual</span></div>
+      <div class="commit"><span class="sha">1add12f</span><span class="msg">feat: render chapter sections with a margin column and routed blocks</span></div>
+      <div class="commit"><span class="sha">1cf7725</span><span class="msg">feat: add the transmission block, restyle the generators, and build the chrome</span></div>
+      <div class="commit"><span class="sha">47142d5</span><span class="msg">feat: restyle the read-only blocks and add the dedicated components</span></div>
+      <div class="commit"><span class="sha">2d69fee</span><span class="msg">feat: lay the Field Manual token sheet and presentation helpers</span></div>
+    </div>
+
+    <p class="lede">One checkpoint per wave — six in total. Nothing has been pushed.</p>
+  </section>
+
+  <footer>
+    Verification run against the working tree at commit <span class="m">114c118</span> on branch
+    <span class="m">main</span>. All checks performed against a live dev server; browser passes via
+    headless Chromium.
+  </footer>
+
+</div>
+
+</body>
+</html>
