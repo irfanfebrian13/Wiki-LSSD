@@ -1,58 +1,64 @@
 import { memo } from "react";
 
-import { sectionIcon } from "@/lib/section-icons";
 import type { Section } from "@/lib/types";
 
 import { BlockRenderer } from "./BlockRenderer";
-import { CONTENT_ICON_PROPS } from "./ui";
-
-interface SectionViewProps {
-  section: Section;
-  /** Registration callback so the shell can observe this section for scroll-spy. */
-  onMount: (id: string, el: HTMLElement | null) => void;
-}
+import { takesMargin } from "./presentation";
 
 /**
- * One section: the reference's page header (category chip, large title) plus
- * its blocks.
+ * One Field Manual section: an `h2` heading, a content column, and a 220px
+ * margin column for that section's notes, examples and warnings.
  *
- * Memoised because search filtering re-renders the shell on every keystroke,
- * and only the sections whose visibility actually changed need to re-render —
- * not every block in the pocketbook.
+ * The parent chapter supplies the page's `h1`, so sections are `h2`s — one
+ * category page has the correct outline: one `h1`, then its sections.
  */
 export const SectionView = memo(function SectionView({
   section,
   onMount,
-}: SectionViewProps) {
-  const Icon = sectionIcon(section.id);
+}: {
+  section: Section;
+  /**
+   * @deprecated The scroll-spy this registered sections for was removed with
+   * the sidebar. Kept as an ignored optional prop only so the shell that still
+   * passes it keeps compiling; the shell rewrite drops the call site and this
+   * prop together.
+   */
+  onMount?: (id: string, el: HTMLElement | null) => void;
+}) {
+  void onMount;
+
+  /* Derive two arrays at render time; do not mutate the frozen `section.blocks`.
+     This matters because a margin block must not appear twice. */
+  const content = section.blocks.filter((block) => !takesMargin(block));
+  const margin = section.blocks.filter(takesMargin);
 
   return (
     <section
       id={section.id}
-      ref={(el) => onMount(section.id, el)}
       aria-labelledby={`${section.id}-heading`}
-      className="scroll-mt-[68px]"
+      className="scroll-mt-[104px]"
     >
-      <header className="reveal-item mb-6">
-        <span className="mb-3.5 inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-[5px] text-[11.5px] font-semibold text-gold">
-          <Icon {...CONTENT_ICON_PROPS} />
-          {section.group}
-        </span>
-        <h2
-          id={`${section.id}-heading`}
-          className="font-display text-[28px] font-bold leading-[1.15] tracking-[-0.01em] text-text"
-        >
-          {section.title}
-        </h2>
-      </header>
+      <h2
+        id={`${section.id}-heading`}
+        className="border-b border-border pb-2 font-display text-[26px] font-semibold text-text"
+      >
+        {section.title}
+      </h2>
 
-      {/* The stagger lives on this stack, so the delay ladder is expressed once
-          in CSS and every section — including the eight-card Penal Generator,
-          whose ladder is clamped at 360ms — is covered without per-block work. */}
-      <div className="reveal-stack grid gap-[18px]">
-        {section.blocks.map((block, i) => (
-          <BlockRenderer key={i} block={block} />
-        ))}
+      <div className="chapter-grid mt-5 grid gap-12 min-[980px]:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="reveal-stack grid gap-[18px]">
+          {content.map((block, i) => (
+            <BlockRenderer key={i} block={block} section={section} />
+          ))}
+        </div>
+
+        {margin.length ? (
+          <aside className="grid gap-5 self-start">
+            {margin.map((block, i) => (
+              <BlockRenderer key={i} block={block} section={section} />
+            ))}
+          </aside>
+        ) : null}
       </div>
     </section>
   );

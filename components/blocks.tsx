@@ -9,6 +9,7 @@ import type {
   WeaponClass,
 } from "@/lib/types";
 
+import { splitPenalBullet } from "./presentation";
 import { CONTENT_ICON_PROPS, MicroLabel } from "./ui";
 
 /* ==========================================================================
@@ -84,7 +85,49 @@ export function Quote({ title, text }: { title: string; text: string }) {
   );
 }
 
-export function Bullets({ title, items }: { title?: string; items: string[] }) {
+export function Bullets({
+  title,
+  items,
+  penalRows = false,
+}: {
+  title?: string;
+  items: string[];
+  /** Penal reference bullets are definition-list rows with a court tag. */
+  penalRows?: boolean;
+}) {
+  if (penalRows) {
+    return (
+      <div>
+        {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
+        <dl className="border-t border-border">
+          {items.map((item, i) => {
+            const row = splitPenalBullet(item);
+            return (
+              <div
+                key={i}
+                className="grid gap-1.5 border-b border-border py-3 sm:grid-cols-[minmax(0,270px)_1fr] sm:gap-[18px]"
+              >
+                <dt className="font-display text-[17px] font-semibold text-text">
+                  {row.term}
+                  {row.court ? (
+                    <span className="ml-2 inline-block rounded-sm border border-coral px-[5px] align-middle font-mono text-[11px] font-semibold text-coral">
+                      Court Verdict
+                    </span>
+                  ) : null}
+                </dt>
+                {row.desc ? (
+                  <dd className="text-[15px] leading-relaxed text-text-dim">
+                    {row.desc}
+                  </dd>
+                ) : null}
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+    );
+  }
+
   return (
     <div>
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}

@@ -1,24 +1,25 @@
-import type { Block } from "@/lib/types";
+import type { Block, Section } from "@/lib/types";
 
 import {
   Bullets,
   Callout,
   DefList,
-  Flow,
   Intro,
   Legend,
   Penal,
   Quote,
-  Ranks,
-  Steps,
   Table,
   TitledCard,
   Tree,
   Weapons,
 } from "./blocks";
+import { FlowDiagram } from "./FlowDiagram";
+import { Ladder } from "./Ladder";
 import { PatrolReportForm } from "./PatrolReportForm";
 import { PenalCodeGenerator } from "./PenalCodeGenerator";
-import { RadioCall } from "./RadioCall";
+import { Procedures } from "./Procedures";
+import { TenCodes } from "./TenCodes";
+import { Transmission } from "./Transmission";
 
 /**
  * Renders one content block.
@@ -26,8 +27,18 @@ import { RadioCall } from "./RadioCall";
  * All content is passed as JSX children rather than injected HTML, so the
  * section text is escaped by React. That matters: several entries contain raw
  * `<` and `>` (e.g. "membawa < 300 butir").
+ *
+ * `section` is threaded through because two presentation-only routes need
+ * context from the parent: the Ten Codes table is recognised by the published
+ * `ten-codes` section id, and the rank ladder reads its sibling legend block.
  */
-export function BlockRenderer({ block }: { block: Block }) {
+export function BlockRenderer({
+  block,
+  section,
+}: {
+  block: Block;
+  section?: Section;
+}) {
   switch (block.type) {
     case "intro":
       return <Intro text={block.text} />;
@@ -45,13 +56,21 @@ export function BlockRenderer({ block }: { block: Block }) {
       return <Quote title={block.title} text={block.text} />;
 
     case "bullets":
-      return <Bullets title={block.title} items={block.items} />;
+      return (
+        <Bullets
+          title={block.title}
+          items={block.items}
+          penalRows={section?.group === "Penal Code"}
+        />
+      );
 
     case "steps":
-      return <Steps title={block.title} items={block.items} />;
+      return <Procedures key={`${section?.id ?? "steps"}-${block.title ?? "untitled"}`} title={block.title} items={block.items} />;
 
-    case "ranks":
-      return <Ranks items={block.items} />;
+    case "ranks": {
+      const legend = section?.blocks.find((candidate) => candidate.type === "legend");
+      return <Ladder ranks={block.items} legend={legend?.type === "legend" ? legend.items : []} />;
+    }
 
     case "legend":
       return <Legend title={block.title} items={block.items} />;
@@ -60,6 +79,7 @@ export function BlockRenderer({ block }: { block: Block }) {
       return <Tree items={block.items} />;
 
     case "table":
+      if (section?.id === "ten-codes") return <TenCodes rows={block.rows} />;
       return <Table title={block.title} head={block.head} rows={block.rows} />;
 
     case "deflist":
@@ -67,7 +87,7 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case "radiocall":
       return (
-        <RadioCall
+        <Transmission
           title={block.title}
           phrase={block.phrase}
           phrase_id={block.phrase_id}
@@ -76,7 +96,7 @@ export function BlockRenderer({ block }: { block: Block }) {
       );
 
     case "flow":
-      return <Flow title={block.title} tracks={block.tracks} />;
+      return <FlowDiagram title={block.title} tracks={block.tracks} />;
 
     case "weapons":
       return <Weapons classes={block.classes} variant={block.variant} />;
