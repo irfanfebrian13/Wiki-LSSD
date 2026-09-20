@@ -1,4 +1,4 @@
-import { ChevronRight, Gavel, TriangleAlert } from "lucide-react";
+import { ChevronRight, Gavel } from "lucide-react";
 
 import { rankColor } from "@/lib/ranks";
 import type {
@@ -9,13 +9,13 @@ import type {
   WeaponClass,
 } from "@/lib/types";
 
-import { Card, CardTitle, CodeChip, CONTENT_ICON_PROPS, MicroLabel } from "./ui";
+import { CONTENT_ICON_PROPS, MicroLabel } from "./ui";
 
 /* ==========================================================================
    Content blocks.
 
    Every one of these renders data straight out of `lib/data.ts` — the markup
-   changed for the redesign, the content did not. Wording, codes, ranks and
+   changed for the restyle, the content did not. Wording, codes, ranks and
    charges are passed through verbatim.
    ========================================================================== */
 
@@ -25,113 +25,109 @@ import { Card, CardTitle, CodeChip, CONTENT_ICON_PROPS, MicroLabel } from "./ui"
 
 export function Intro({ text }: { text: string }) {
   return (
-    <p className="max-w-[68ch] text-[14.5px] leading-relaxed text-text-dim">
+    <p className="max-w-[66ch] text-[15px] leading-relaxed text-text-dim">
       {text}
     </p>
   );
 }
 
-/** note + example share a shape, differing only in accent colour. */
-export function TitledCard({
-  title,
-  text,
-  tone,
-}: {
+/**
+ * note + example share a shape; both are informational, so both take amber.
+ *
+ * `tone` stays in the type because the block renderer still passes it, but it
+ * no longer changes the rendering: in the margin column both read as
+ * informational.
+ */
+export function TitledCard(props: {
   title: string;
   text: string;
   tone: "info" | "ok";
 }) {
   return (
-    <Card accent={tone === "info" ? "gold" : "mint"}>
-      <CardTitle>{title}</CardTitle>
-      <p className="max-w-[68ch] text-[14px] leading-relaxed text-text-dim">
-        {text}
-      </p>
-    </Card>
+    <div className="border-l-[3px] border-l-gold py-[2px] pl-3.5">
+      <b className="mb-0.5 block font-mono text-[12px] font-semibold text-gold">
+        {props.title}
+      </b>
+      <p className="text-[14px] leading-relaxed text-text-dim">{props.text}</p>
+    </div>
   );
 }
 
-/** A callout — the reference's coral warning box. */
+/**
+ * A warning.
+ *
+ * The brief wants a 3px left rule in red with a mono label and no filled box.
+ * A `callout` block carries only its text, so the label is the site's own word
+ * for the concept rather than an invented content title.
+ */
 export function Callout({ text }: { text: string }) {
   return (
-    <div className="rounded-md border border-coral/30 bg-coral-soft px-4 py-[13px]">
-      <div className="flex items-start gap-3">
-        <TriangleAlert
-          {...CONTENT_ICON_PROPS}
-          className="mt-0.5 shrink-0 text-coral"
-        />
-        <p className="text-[13.5px] font-semibold leading-relaxed text-text">
-          {text}
-        </p>
-      </div>
+    <div className="border-l-[3px] border-l-coral py-[2px] pl-3.5">
+      <b className="mb-0.5 block font-mono text-[12px] font-semibold text-coral">
+        Peringatan
+      </b>
+      <p className="text-[13.5px] font-semibold leading-relaxed text-text">
+        {text}
+      </p>
     </div>
   );
 }
 
 export function Quote({ title, text }: { title: string; text: string }) {
   return (
-    <Card accent="mint">
-      <CardTitle>{title}</CardTitle>
-      <p className="max-w-[68ch] text-[14px] italic leading-relaxed text-text-dim">
-        &ldquo;{text}&rdquo;
-      </p>
-    </Card>
-  );
-}
-
-export function Bullets({
-  title,
-  items,
-}: {
-  title?: string;
-  items: string[];
-}) {
-  return (
-    <div>
-      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
-      <Card>
-        <ul className="grid gap-3">
-          {items.map((item, i) => (
-            <li key={i} className="flex gap-3">
-              <span
-                aria-hidden
-                className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold"
-              />
-              <span className="text-[14px] leading-relaxed text-text-dim">
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </Card>
+    <div className="rounded-sm border border-outline bg-surface px-[18px] py-4">
+      <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-text-dim">
+        {title}
+      </div>
+      <p className="font-display text-[17px] leading-relaxed text-text">{text}</p>
     </div>
   );
 }
 
+export function Bullets({ title, items }: { title?: string; items: string[] }) {
+  return (
+    <div>
+      {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
+      <ul className="border-t border-border">
+        {items.map((item, i) => (
+          <li
+            key={i}
+            className="border-b border-border py-2.5 text-[14px] leading-relaxed text-text-dim"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * A plain, non-interactive step list.
+ *
+ * The interactive version — with the session-only done toggle — is
+ * `components/Procedures.tsx`, which the renderer routes every `steps` block
+ * to. This stays as a functional fallback in the same visual language.
+ */
 export function Steps({ title, items }: { title?: string; items: string[] }) {
   return (
     <div>
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
-      <Card className="py-2">
-        <ol>
-          {items.map((item, i) => (
-            <li
-              key={i}
-              className="flex gap-3.5 border-b border-border py-[13px] last:border-b-0"
+      <ol className="border-t border-border">
+        {items.map((item, i) => (
+          <li key={i} className="flex gap-4 border-b border-border py-3">
+            <span
+              aria-hidden
+              className="w-8 shrink-0 font-mono text-[18px] font-semibold text-gold"
             >
-              <span
-                aria-hidden
-                className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-sm bg-surface-2 font-display text-[13px] font-bold text-gold"
-              >
-                {i + 1}
-              </span>
-              <span className="pt-0.5 text-[13.5px] leading-relaxed text-text-dim">
-                {item}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </Card>
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="text-[14px] leading-relaxed text-text-dim">
+              {item}
+            </span>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -152,7 +148,7 @@ export function Table({
   return (
     <div>
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
-      <div className="overflow-x-auto rounded-lg border border-border bg-surface px-5 py-2">
+      <div className="overflow-x-auto rounded-sm border border-border bg-surface px-4 py-1">
         <table className="w-full border-collapse text-[13.5px]">
           <thead>
             <tr>
@@ -160,7 +156,7 @@ export function Table({
                 <th
                   key={i}
                   scope="col"
-                  className="whitespace-nowrap border-b border-border-strong px-2.5 py-2 text-left font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-text-faint"
+                  className="whitespace-nowrap border-b border-outline px-2.5 py-2 text-left font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em] text-text-dim"
                 >
                   {h}
                 </th>
@@ -175,7 +171,7 @@ export function Table({
                     key={c}
                     className={
                       c === 0
-                        ? "whitespace-nowrap border-b border-border px-2.5 py-[9px] font-mono text-[12.5px] font-medium text-gold"
+                        ? "whitespace-nowrap border-b border-border px-2.5 py-[9px] font-mono text-[12.5px] font-medium text-mint"
                         : "border-b border-border px-2.5 py-[9px] text-text"
                     }
                   >
@@ -195,22 +191,25 @@ export function DefList({ title, items }: { title?: string; items: DefItem[] }) 
   return (
     <div>
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
-      <dl className="grid gap-2">
+      <dl className="border-t border-border">
         {items.map((item, i) => (
           <div
             key={i}
-            className="card-lift grid grid-cols-[minmax(88px,128px)_1fr] items-start gap-4 rounded-lg border border-border bg-surface px-4 py-3"
+            className="grid grid-cols-[minmax(88px,150px)_1fr] items-baseline gap-4 border-b border-border py-3"
             style={
-              item.color ? { borderLeftWidth: 2, borderLeftColor: item.color } : undefined
+              item.color
+                ? {
+                    borderLeftWidth: 3,
+                    borderLeftColor: item.color,
+                    paddingLeft: 12,
+                  }
+                : undefined
             }
           >
-            <dt
-              className="font-mono text-[12.5px] font-semibold"
-              style={{ color: item.color ?? "var(--gold)" }}
-            >
+            <dt className="font-display text-[17px] font-semibold text-text">
               {item.term}
             </dt>
-            <dd className="text-[13.5px] leading-relaxed text-text-dim">
+            <dd className="text-[14px] leading-relaxed text-text-dim">
               {item.desc}
             </dd>
           </div>
@@ -220,19 +219,22 @@ export function DefList({ title, items }: { title?: string; items: DefItem[] }) 
   );
 }
 
+/**
+ * The plain rank list.
+ *
+ * The real ladder — tier bands, Barlow tier names, mono rank numbers — is
+ * `components/Ladder.tsx`, which the renderer routes the `ranks` block to. This
+ * stays as a minimal fallback.
+ */
 export function Ranks({ items }: { items: string[] }) {
   return (
-    <ol className="grid gap-1.5">
+    <ol className="border-t border-border">
       {items.map((rank, i) => (
         <li
           key={i}
-          /* Same card treatment as every other surface on the page: the
-             hairline border, the raised `--surface` fill and the shared
-             `card-lift` hover, so these rows read as one design system with the
-             stat boxes above rather than as bare list rows. */
-          className="card-lift flex items-center gap-3.5 rounded-md border border-border bg-surface px-4 py-2.5 transition-transform duration-150 hover:translate-x-1"
+          className="flex items-center gap-3.5 border-b border-border py-2.5"
         >
-          <span aria-hidden className="w-6 font-mono text-[11px] text-text-faint">
+          <span aria-hidden className="w-6 font-mono text-[11px] text-text-dim">
             {String(i + 1).padStart(2, "0")}
           </span>
           <span className="text-[14px] font-semibold" style={{ color: rankColor(rank) }}>
@@ -248,15 +250,12 @@ export function Legend({ title, items }: { title: string; items: LegendItem[] })
   return (
     <div>
       <MicroLabel className="mb-3">{title}</MicroLabel>
-      <div className="grid gap-2">
+      <div className="border-t border-border">
         {items.map((item, i) => (
-          <div
-            key={i}
-            className="card-lift flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-2.5"
-          >
+          <div key={i} className="flex items-start gap-3 border-b border-border py-2.5">
             <span
               aria-hidden
-              className="mt-[5px] h-3.5 w-3.5 shrink-0 rounded-sm"
+              className="mt-[5px] h-3 w-3 shrink-0 rounded-sm"
               style={{ background: item.color }}
             />
             <div className="text-[13.5px]">
@@ -272,14 +271,11 @@ export function Legend({ title, items }: { title: string; items: LegendItem[] })
 
 export function Tree({ items }: { items: TreeNode[] }) {
   return (
-    <div className="grid gap-3">
+    <div className="border-t border-border">
       {items.map((node, i) => (
-        <div key={i} className="rounded-lg border border-border bg-surface px-4 py-3.5">
+        <div key={i} className="border-b border-border py-3.5">
           <div className="flex items-center gap-2.5 text-[14px] font-semibold text-text">
-            <ChevronRight
-              {...CONTENT_ICON_PROPS}
-              className="shrink-0 text-gold"
-            />
+            <ChevronRight {...CONTENT_ICON_PROPS} className="shrink-0 text-gold" />
             {node.name}
           </div>
           <ul className="mt-2.5 grid gap-1.5 pl-5">
@@ -301,9 +297,9 @@ export function Tree({ items }: { items: TreeNode[] }) {
 /**
  * A quick-reference flow: one or more routes, each a vertical chain of steps.
  *
- * A step with `branches` is a fork — the vehicle-search outcome, where "clear"
- * and "not clear" lead to different destinations. Branches render side by side
- * and wrap on narrow screens, so the diagram never forces a horizontal scroll.
+ * The real diagram — hand-written inline SVG — is
+ * `components/FlowDiagram.tsx`, which the renderer routes the `flow` block to.
+ * This stays as a functional fallback.
  */
 export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] }) {
   return (
@@ -311,7 +307,7 @@ export function Flow({ title, tracks }: { title?: string; tracks: FlowTrack[] })
       {title ? <MicroLabel className="mb-3">{title}</MicroLabel> : null}
       <div className="grid gap-4 lg:grid-cols-2">
         {tracks.map((track, t) => (
-          <div key={t} className="rounded-lg border border-border bg-surface px-4 py-3.5">
+          <div key={t} className="rounded-sm border border-border bg-surface px-4 py-3.5">
             <h4 className="mb-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-gold">
               {track.title}
             </h4>
@@ -368,22 +364,22 @@ export function Weapons({
 }) {
   const illegal = variant === "illegal";
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
       {classes.map((cls, i) => (
-        <div key={i} className="rounded-lg border border-border bg-surface px-4 py-3.5">
+        <div key={i}>
           <h4
-            className={`mb-3 border-b border-border pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] ${
-              illegal ? "text-coral" : "text-gold"
+            className={`border-b-2 pb-1.5 font-display text-[18px] font-semibold ${
+              illegal ? "border-b-coral text-coral" : "border-b-gold text-text"
             }`}
           >
             {cls.name}
           </h4>
-          <ol className="grid gap-1.5">
+          <ol className="border-t border-border">
             {cls.items.map((item, k) => (
-              <li key={k} className="flex gap-2.5 text-[13.5px] text-text-dim">
-                <span aria-hidden className="w-4 shrink-0 font-mono text-[11px] text-text-faint">
-                  {k + 1}
-                </span>
+              <li
+                key={k}
+                className="border-b border-border py-[5px] text-[15px] text-text-dim"
+              >
                 {item}
               </li>
             ))}
@@ -404,22 +400,27 @@ export function Penal({
   charges: string[];
 }) {
   return (
-    <Card accent="gold">
-      <h4 className="font-display text-[16px] font-semibold text-text">{title}</h4>
-      <span className="mb-3.5 mt-2 inline-block">
-        <CodeChip className="border-coral/30 bg-coral-soft text-coral">{main}</CodeChip>
-      </span>
-      <ul className="grid gap-2">
+    <div className="border-t border-border pt-4">
+      <h4 className="font-display text-[19px] font-semibold text-text">{title}</h4>
+      <div className="mt-1.5 font-mono text-[13px] font-semibold text-coral">
+        {main}
+      </div>
+      <ul className="mt-3 border-t border-border">
         {charges.map((charge, i) => (
-          <li key={i} className="relative pl-5 text-[13.5px] leading-relaxed text-text-dim">
+          <li
+            key={i}
+            className="flex gap-2.5 border-b border-border py-2 text-[14px] leading-relaxed text-text-dim"
+          >
             <Gavel
-              {...CONTENT_ICON_PROPS}
-              className="absolute left-0 top-[3px] text-gold"
+              aria-hidden
+              size={13}
+              strokeWidth={2}
+              className="mt-1 shrink-0 text-gold"
             />
             {charge}
           </li>
         ))}
       </ul>
-    </Card>
+    </div>
   );
 }

@@ -49,6 +49,9 @@ lssd-wiki-modern.html
 
 # claude code local state (agents, skills and plans are machine-local tooling)
 .claude/
+
+# playwright-cli session state (snapshots, traces, saved browser data)
+.playwright-cli/
 # Windows marks downloaded files as `<name>:Zone.Identifier` (a colon, not a
 # dot), so the leading `*` must be unbounded — `*.Zone.Identifier` matches
 # nothing and silently lets these artifacts into the tree.

@@ -23,10 +23,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
      document attribute below. */
   const [turns, setTurns] = useState(0);
 
-  // Two instances exist in the DOM (mobile topbar, desktop fixed) and only one
-  // is visible at a time. Watching the attribute keeps them in sync when the
-  // viewport crosses the breakpoint, and also picks up whatever the pre-paint
-  // script in layout.tsx already applied.
+  // The header band is dark in both themes, so the button wears the band's own
+  // ink rather than a theme-relative surface colour. Watching the attribute
+  // also picks up whatever the pre-paint script in layout.tsx already applied.
   useEffect(() => {
     const read = () => {
       const current = document.documentElement.getAttribute("data-theme");
@@ -71,7 +70,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className={`group grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-[border-color,transform] duration-200 hover:border-gold active:scale-[0.97] ${className}`}
+      className={`grid h-8 w-8 shrink-0 place-items-center rounded-sm border border-[color:rgba(237,239,243,0.4)] text-[15px] text-[var(--band-ink,var(--text))] transition-[border-color] duration-200 hover:border-[var(--band-ink,var(--text))] ${className}`}
     >
       {/* Half a turn per switch, with an overshoot easing. Inline because the
           angle is runtime state; the transition itself lives in `theme-spin`. */}

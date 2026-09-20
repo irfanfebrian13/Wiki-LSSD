@@ -1,9 +1,10 @@
 /* ============================================================================
    Shared presentation primitives.
 
-   The design language of `lssd-wiki-modern.html`: charcoal cards with hairline
-   borders and generous radii, gold for identity and primary action, mint for
-   positive/secondary, coral for warnings and danger.
+   The Field Manual language: 2–3px radii, hairline rules instead of rounded
+   cards, and a hard offset shadow reserved for the charge sheet. Gold is the
+   identity accent, mint the secondary (codes, links, checkbox accent), coral
+   for warnings and danger.
 
    Presentational only — no state, no "use client", so both the Server Component
    block renderer and the client-side tools can share one definition.
@@ -26,7 +27,7 @@ export const CONTENT_ICON_PROPS: LucideProps = {
   "aria-hidden": true,
 };
 
-/** The card: the reference's primary container. */
+/** The card: the Field Manual's primary container. */
 export function Card({
   children,
   accent,
@@ -51,7 +52,7 @@ export function Card({
       /* `data-accent` lets the hover rule in `globals.css` re-assert the top
          rule's colour — a plain `hover:border-*` utility would repaint it. */
       data-accent={accent}
-      className={`card-lift rounded-lg border border-border bg-surface px-[26px] py-6 ${accentClass} ${className}`}
+      className={`rounded-sm border border-border bg-surface px-6 py-5 ${accentClass} ${className}`}
     >
       {children}
     </div>
@@ -70,11 +71,11 @@ export function CardTitle({
 }) {
   return (
     <h3
-      className={`mb-3.5 flex items-center gap-2 font-display text-[16.5px] font-semibold leading-snug text-text ${className}`}
+      className={`mb-3 flex items-center gap-2 font-display text-[16.5px] font-semibold leading-snug text-text ${className}`}
     >
       {children}
       {tag != null ? (
-        <span className="rounded-full bg-surface-2 px-2 py-[2px] font-mono text-[10.5px] font-medium text-text-faint">
+        <span className="rounded-sm border border-border bg-surface-2 px-2 py-[2px] font-mono text-[10.5px] font-medium text-text-dim">
           {tag}
         </span>
       ) : null}
@@ -82,7 +83,13 @@ export function CardTitle({
   );
 }
 
-/** Uppercase micro-label used above grouped content and in the sidebar. */
+/**
+ * Uppercase micro-label used above grouped content.
+ *
+ * Deliberately a plain label: no fill, no border, no pill. The brief forbids
+ * small pill "eyebrow" labels above headings; labelling grouped content is
+ * legitimate, only the pill styling is not.
+ */
 export function MicroLabel({
   children,
   className = "",
@@ -92,14 +99,14 @@ export function MicroLabel({
 }) {
   return (
     <div
-      className={`font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em] text-text-faint ${className}`}
+      className={`font-mono text-[10.5px] font-semibold uppercase tracking-[0.08em] text-text-dim ${className}`}
     >
       {children}
     </div>
   );
 }
 
-/** The pill used for codes, callsigns and other read-off-the-screen values. */
+/** The chip used for codes, callsigns and other read-off-the-screen values. */
 export function CodeChip({
   children,
   className = "",
@@ -109,43 +116,42 @@ export function CodeChip({
 }) {
   return (
     <span
-      className={`inline-block rounded-full border border-border-strong bg-surface-2 px-[9px] py-[3px] font-mono text-[12px] font-semibold text-gold ${className}`}
+      className={`inline-block rounded-sm border border-border bg-surface-2 px-[7px] py-[2px] font-mono text-[12px] font-semibold text-mint ${className}`}
     >
       {children}
     </span>
   );
 }
 
-/* Buttons: a 2px lift on hover, a slight press on click. `transform` is in the
-   transition list so both read as motion rather than a snap. The lift is
-   unconditional — `motion-safe:` would compile to
-   `@media (prefers-reduced-motion: no-preference)` and drop the lift entirely
-   when the OS reports reduced motion, which is precisely what this app must
-   not do. */
+/* Buttons: a slight press on click. `transform` is in the transition list so it
+   reads as motion rather than a snap. The press is unconditional —
+   `motion-safe:` would compile to `@media (prefers-reduced-motion: no-preference)`
+   and drop it entirely when the OS reports reduced motion, which is precisely
+   what this app must not do. */
 export const BTN_GOLD =
-  "inline-flex items-center justify-center rounded-full bg-gold px-5 py-[11px] text-[13.5px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40 disabled:hover:opacity-40 disabled:hover:translate-y-0";
+  "inline-flex items-center justify-center rounded-sm bg-gold px-4 py-[9px] text-[13px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98] disabled:opacity-40";
 
 export const BTN_OUTLINE =
-  "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40";
+  "inline-flex items-center justify-center rounded-sm border border-outline bg-transparent px-4 py-[9px] text-[13px] font-semibold text-text transition-[color,border-color] duration-150 hover:border-gold hover:text-gold disabled:opacity-40";
 
 /* The third tier: a plain text action. Deliberately carries no fill, border or
    lift, so it reads as a footnote beside the two filled buttons rather than
    competing with them. Kept as a link style (not a button) because that is
    exactly its role — a secondary route into a tool, not a primary call. */
 export const BTN_LINK =
-  "inline-flex items-center gap-1.5 px-1 py-[11px] text-[13.5px] font-medium text-text-dim transition-colors duration-150 hover:text-gold";
+  "inline-flex items-center gap-1.5 px-1 py-[9px] text-[13px] font-medium text-text-dim transition-colors duration-150 hover:text-gold";
 
 export const BTN_MINT =
-  "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] hover:-translate-y-0.5 active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-sm border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] active:scale-[0.98]";
 
 export const BTN_DANGER =
-  "inline-flex items-center justify-center rounded-full border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-[opacity,transform] duration-150 hover:opacity-[0.85] hover:-translate-y-0.5 active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-sm border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-[opacity,transform] duration-150 hover:opacity-[0.85] active:scale-[0.98]";
 
 /* Fields: focus gets a soft translucent ring as well as the border colour, so
    the active field is legible at a glance without a hard outline. The ring uses
    the accent's own soft token, which is already theme-aware. */
 export const FIELD =
-  "w-full rounded-sm border border-border-strong bg-surface-2 px-3 py-2.5 text-[13.5px] text-text placeholder:text-text-faint transition-[border-color,box-shadow] focus:border-mint focus:shadow-[0_0_0_3px_var(--mint-soft)] focus:outline-none disabled:opacity-50";
+  "w-full rounded-sm border border-border-strong bg-surface-2 px-3 py-2 text-[13.5px] text-text placeholder:text-text-faint transition-[border-color,box-shadow] focus:border-gold focus:shadow-[0_0_0_3px_var(--gold-soft)] focus:outline-none disabled:opacity-50";
 
 /** A labelled form field, matching the reference's `.form-field`. */
 export function Field({
@@ -183,7 +189,7 @@ export function CheckField({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 shrink-0 accent-gold"
+        className="h-4 w-4 shrink-0 accent-mint"
       />
       {label}
     </label>
@@ -200,7 +206,7 @@ export function OutputBox({
 }) {
   return (
     <div
-      className={`max-h-[300px] overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg-2 p-4 font-mono text-[11.5px] text-mint ${className}`}
+      className={`max-h-[300px] overflow-y-auto whitespace-pre-wrap break-words rounded-sm border border-border bg-bg-2 p-4 font-mono text-[11.5px] text-mint ${className}`}
     >
       {children}
     </div>
