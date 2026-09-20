@@ -243,8 +243,12 @@
 
    CSS-first. The only JS-driven motion is the nav highlight (it needs real
    geometry) and the stat count-up (it needs rAF); everything else is a class
-   here, which keeps `prefers-reduced-motion` the single place motion is
-   switched off instead of a second, JS-side opt-out.
+   here, so the whole system is driven from CSS.
+
+   Motion is unconditional: the full animation set runs regardless of the OS
+   "Animation Effects" setting or `prefers-reduced-motion`, so the pocketbook
+   looks the same on every machine. Nothing below is gated on that preference,
+   and there is deliberately no reduced-motion override block.
 
    Durations are deliberately 100–500ms: these are micro-interactions, not
    set pieces to sit through.
@@ -361,29 +365,8 @@
   transition: transform 0.4s var(--ease-overshoot);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    /* Also zeroed: a stagger delay of up to 360ms under a 0.01ms duration
-       would leave late items invisible (fill-mode `both`) for a third of a
-       second. */
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
-  }
-  /* Entrance motion is pure decoration — drop it rather than run it at
-     0.01ms. */
-  .sidebar-enter,
-  .reveal-item,
-  .reveal-stack > * {
-    animation: none;
-  }
-  .card-lift:hover {
-    transform: none;
-  }
-}
+/* No `prefers-reduced-motion` override lives here on purpose. The pocketbook's
+   animation system is part of the product's identity, and it must run in full
+   whether or not the OS reports a reduced-motion preference — an earlier block
+   here zeroed every duration, dropped the entrance animations and removed the
+   card hover lift. Re-adding one would silently undo that. */

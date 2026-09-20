@@ -10,7 +10,7 @@ import { Hero } from "./Hero";
 import { SectionView } from "./SectionView";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
-import { replayReveal, prefersReducedMotion } from "./motion";
+import { replayReveal } from "./motion";
 
 /**
  * Below this width the sidebar becomes an overlay drawer.
@@ -436,9 +436,9 @@ function BackToTop() {
       onClick={() =>
         window.scrollTo({
           top: 0,
-          // Honor the OS setting here too: the CSS rule that disables smooth
-          // scrolling covers anchor jumps, but not this programmatic call.
-          behavior: prefersReducedMotion() ? "auto" : "smooth",
+          // Smooth unconditionally: the pocketbook's motion is not gated on the
+          // OS setting, and the CSS smooth-scroll it matches is always on too.
+          behavior: "smooth",
         })
       }
       aria-label="Kembali ke atas"

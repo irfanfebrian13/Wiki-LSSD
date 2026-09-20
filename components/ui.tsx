@@ -117,13 +117,16 @@ export function CodeChip({
 }
 
 /* Buttons: a 2px lift on hover, a slight press on click. `transform` is in the
-   transition list so both read as motion rather than a snap, and `motion-safe`
-   keeps the lift out of the way when reduced motion is on. */
+   transition list so both read as motion rather than a snap. The lift is
+   unconditional — `motion-safe:` would compile to
+   `@media (prefers-reduced-motion: no-preference)` and drop the lift entirely
+   when the OS reports reduced motion, which is precisely what this app must
+   not do. */
 export const BTN_GOLD =
-  "inline-flex items-center justify-center rounded-full bg-gold px-5 py-[11px] text-[13.5px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] motion-safe:hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40 disabled:hover:opacity-40 disabled:motion-safe:hover:translate-y-0";
+  "inline-flex items-center justify-center rounded-full bg-gold px-5 py-[11px] text-[13.5px] font-semibold text-on-accent transition-[opacity,transform] duration-150 hover:opacity-[0.88] hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40 disabled:hover:opacity-40 disabled:hover:translate-y-0";
 
 export const BTN_OUTLINE =
-  "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint motion-safe:hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40";
+  "inline-flex items-center justify-center rounded-full border border-border-strong bg-transparent px-5 py-[11px] text-[13.5px] font-semibold text-text transition-[color,border-color,transform] duration-150 hover:border-mint hover:text-mint hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-40";
 
 /* The third tier: a plain text action. Deliberately carries no fill, border or
    lift, so it reads as a footnote beside the two filled buttons rather than
@@ -133,10 +136,10 @@ export const BTN_LINK =
   "inline-flex items-center gap-1.5 px-1 py-[11px] text-[13.5px] font-medium text-text-dim transition-colors duration-150 hover:text-gold";
 
 export const BTN_MINT =
-  "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] motion-safe:hover:-translate-y-0.5 active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-full border border-mint/30 bg-mint-soft px-4 py-2 text-[12.5px] font-semibold text-mint transition-[opacity,transform] duration-150 hover:opacity-[0.85] hover:-translate-y-0.5 active:scale-[0.97]";
 
 export const BTN_DANGER =
-  "inline-flex items-center justify-center rounded-full border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-[opacity,transform] duration-150 hover:opacity-[0.85] motion-safe:hover:-translate-y-0.5 active:scale-[0.97]";
+  "inline-flex items-center justify-center rounded-full border border-coral/30 bg-coral-soft px-4 py-2 text-[12.5px] font-semibold text-coral transition-[opacity,transform] duration-150 hover:opacity-[0.85] hover:-translate-y-0.5 active:scale-[0.97]";
 
 /* Fields: focus gets a soft translucent ring as well as the border colour, so
    the active field is legible at a glance without a hard outline. The ring uses

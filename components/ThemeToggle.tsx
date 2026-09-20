@@ -74,8 +74,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       className={`group grid h-[38px] w-[38px] place-items-center rounded-md border border-border-strong bg-surface text-[15px] text-gold transition-[border-color,transform] duration-200 hover:border-gold active:scale-[0.97] ${className}`}
     >
       {/* Half a turn per switch, with an overshoot easing. Inline because the
-          angle is runtime state; the transition itself lives in `theme-spin`
-          so `prefers-reduced-motion` can switch it off in one place. */}
+          angle is runtime state; the transition itself lives in `theme-spin`. */}
       <Icon
         aria-hidden
         size={16}

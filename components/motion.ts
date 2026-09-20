@@ -7,18 +7,10 @@
    need real information CSS does not have: the nav highlight needs the active
    link's measured geometry, and the count-up needs a frame loop.
 
-   Kept here rather than in the components so the replay helper has one home and
-   the reduced-motion check is written once.
+   Kept here rather than in the components so the replay helper has one home.
    ========================================================================= */
 
 import { useEffect, useRef } from "react";
-
-/** Motion the user has asked the OS to suppress. Read live, not once: the
-    setting can change while the tab is open. */
-export function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 /**
  * Replay the entrance animation on every element in `root` that carries one.
@@ -33,7 +25,7 @@ export function prefersReducedMotion(): boolean {
  * removal and the re-add into no change at all.
  */
 export function replayReveal(root: HTMLElement | null) {
-  if (!root || prefersReducedMotion()) return;
+  if (!root) return;
 
   const targets = root.querySelectorAll<HTMLElement>(
     ".reveal-item, .reveal-stack > *",
@@ -178,9 +170,9 @@ export function useCountUp(
 
     const final = String(value);
 
-    // Reduced motion (or a no-op count) settles immediately — the point of the
-    // number is the number, not the ticking.
-    if (prefersReducedMotion() || value === 0) {
+    // A no-op count settles immediately — the point of the number is the
+    // number, not the ticking. Motion itself is never gated on the OS setting.
+    if (value === 0) {
       el.textContent = final;
       return;
     }
