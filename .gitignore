@@ -40,10 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Design reference — the standalone HTML mockup the UI was rebuilt from. Kept
-# locally for consultation only; `globals.css`, `ui.tsx` and `penal.ts` cite it
-# by name in comments, but nothing imports it, so it is not part of the build.
+# Design reference — the standalone HTML mockups the UI was rebuilt from. Kept
+# locally for consultation only; `globals.css`, `ui.tsx` and `penal.ts` cite
+# them by name in comments, but nothing imports them, so they are not part of
+# the build.
 lssd-wiki-modern.html
+/design-reference/
 
 # claude code local state (agents, skills and plans are machine-local tooling)
 .claude/

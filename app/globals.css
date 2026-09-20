@@ -55,9 +55,22 @@
   /* Text sitting on a filled gold surface — near-black here, white in light. */
   --on-accent: #1a1300;
 
-  --display: var(--font-space-grotesk), system-ui, sans-serif;
-  --font: var(--font-inter), system-ui, sans-serif;
-  --mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  /* The transmission header strip and the selected command-palette row. */
+  --tx: #2b3444;
+  /* A stronger border than --border-strong: the charge sheet, the active tab and
+     the palette box. */
+  --outline: #313843;
+  /* Text sitting on --tx. */
+  --on-tx: #edeff3;
+
+  /* Explicit fallback stacks: they are what keeps the layout stable if a font
+     fails to load. The variable names on the left are load-bearing — only what
+     they resolve to changed. */
+  --display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font: var(--font-plex-sans), system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --mono: var(--font-plex-mono), ui-monospace, Menlo, Consolas, monospace;
+  --cond: var(--font-barlow-condensed), "Arial Narrow", Arial, sans-serif;
 }
 
 [data-theme="light"] {
@@ -95,6 +108,15 @@
   --coral-soft: rgba(255, 107, 107, 0.14);
 
   --on-accent: #ffffff;
+
+  /* The transmission strip stays a DARK band in both themes — the brief describes
+     it as a dark fill carrying cream text, and a strip that flipped to pale in
+     light mode would stop reading as a transmission header. This value is a
+     neutral dark slate chosen from this sheet's family; it introduces no new hue. */
+  --tx: #2a3340;
+  --outline: rgba(12, 14, 18, 0.22);
+  /* Cream in both themes, because --tx is dark in both. */
+  --on-tx: #edeff3;
 }
 
 /* Map the raw tokens into Tailwind's namespace.
@@ -122,17 +144,25 @@
   --color-coral-soft: var(--coral-soft);
   --color-on-accent: var(--on-accent);
 
+  /* The three structural tokens the Field Manual layout adds. */
+  --color-tx: var(--tx);
+  --color-outline: var(--outline);
+  --color-on-tx: var(--on-tx);
+
+  /* 2–3px only. Redefining the scale here is what collapses every existing
+     rounded-sm/md/lg call site at once — do not chase them individually. */
   /* The key must be exactly `--radius`: that is the theme namespace Tailwind's
      bare `.rounded` reads. (A `--radius-DEFAULT` alias is inert.) These are
      literal rather than var()-referenced, so no theme override is needed. */
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius: 3px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 3px;
 
   --font-sans: var(--font);
   --font-mono: var(--mono);
   --font-display: var(--display);
+  --font-cond: var(--cond);
 }
 
 @layer base {
@@ -370,3 +400,36 @@
    whether or not the OS reports a reduced-motion preference — an earlier block
    here zeroed every duration, dropped the entrance animations and removed the
    card hover lift. Re-adding one would silently undo that. */
+
+/* ============================================================================
+   Print
+
+   Navigation and interactive chrome have no meaning on paper, and the offset
+   shadow would print as noise.
+   ========================================================================= */
+@media print {
+  .app-header,
+  .tab-strip,
+  .bottom-nav,
+  .charge-fab,
+  .command-palette,
+  .toast,
+  .reading-progress,
+  .back-to-top {
+    display: none !important;
+  }
+
+  /* The chapter's two-column grid becomes a single flow. */
+  .chapter-grid {
+    display: block !important;
+  }
+
+  /* Drop the page texture and the offset shadow, which would print as noise. */
+  body::before {
+    display: none !important;
+  }
+
+  .charge-sheet {
+    box-shadow: none !important;
+  }
+}

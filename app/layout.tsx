@@ -1,29 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import {
+  Barlow_Condensed,
+  Fraunces,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+} from "next/font/google";
 
 import "./globals.css";
 
-/* Space Grotesk for display, Inter for body/UI, JetBrains Mono for anything a
-   deputy reads off a screen mid-shift (codes, callsigns, plates, generated
-   output) — the reference's type system. */
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+/* Fraunces for headings, chapter numerals, TOC titles, rank names and quoted
+   blocks. Variable font — no explicit weights needed. */
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+/* IBM Plex Sans for body copy at 16px/1.6. Not a variable font, so every weight
+   in use must be listed. */
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-plex-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+/* IBM Plex Mono for codes, labels, scripts and generated output. */
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+/* Barlow Condensed, uppercase and letter-spaced, for the category tabs and the
+   rank tier names. */
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["500", "600"],
   display: "swap",
 });
 
@@ -63,7 +78,7 @@ export default function RootLayout({
     <html
       lang="id"
       data-theme="dark"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${barlowCondensed.variable}`}
       // The inline script below sets data-theme before hydration, so the
       // server markup and the client tree can legitimately differ here.
       suppressHydrationWarning
