@@ -81,6 +81,43 @@ export function chapterOfSection(sectionId: string): Chapter | undefined {
 }
 
 /* ==========================================================================
+   View chapters
+   ========================================================================== */
+
+/**
+ * The chapters that render as one page per section instead of stacking every
+ * section on a single scrolling page, keyed by chapter slug.
+ *
+ * The Form Helper chapter holds two self-contained tools, each with its own
+ * form state, so it shows one tool at a time behind a sub-navigation. Every
+ * other chapter keeps the stacked page it has always had — this is the only
+ * chapter whose sections are pages in their own right.
+ */
+const VIEW_CHAPTER_SLUGS = new Set(["form-helper"]);
+
+/** Whether a chapter splits into separate per-section pages. */
+export function isViewChapter(chapter: Chapter): boolean {
+  return VIEW_CHAPTER_SLUGS.has(chapter.slug);
+}
+
+/**
+ * The active view of a view chapter: the section the hash named, or the
+ * chapter's first section when the hash named only the chapter — which is what
+ * the category tab writes (`#form-helper`), so that tab always lands on the
+ * first tool.
+ *
+ * The section ids are the published deep links (`#patrol-report`,
+ * `#penal-generator`), so a view is addressed by the section it shows and the
+ * existing links keep working unchanged.
+ */
+export function resolveView(sectionId: string | null, chapter: Chapter): Section {
+  return (
+    chapter.sections.find((section) => section.id === sectionId) ??
+    chapter.sections[0]
+  );
+}
+
+/* ==========================================================================
    Hash resolution
    ========================================================================== */
 

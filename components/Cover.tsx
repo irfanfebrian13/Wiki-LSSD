@@ -37,18 +37,19 @@ export function Cover({
         </p>
 
         {/* Real anchors, so they work without JavaScript; the shell's hash
-            listener handles the navigation. */}
+            listener handles the navigation. Each points at its own tool's
+            section id, which is that tool's page. */}
         <div className="mt-6 flex flex-wrap gap-6">
           <a
             href="#patrol-report"
-            onClick={() => onSelect("form-helper")}
+            onClick={() => onSelect("patrol-report")}
             className="font-semibold text-mint underline decoration-2 underline-offset-4"
           >
             Buka Patrol Report Generator
           </a>
           <a
             href="#penal-generator"
-            onClick={() => onSelect("form-helper")}
+            onClick={() => onSelect("penal-generator")}
             className="font-semibold text-mint underline decoration-2 underline-offset-4"
           >
             Buka Penal Code Generator

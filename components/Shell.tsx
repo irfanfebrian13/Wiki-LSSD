@@ -9,12 +9,19 @@ import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "./CommandPalette";
 import { Cover } from "./Cover";
 import { SectionView } from "./SectionView";
+import { SubNav } from "./SubNav";
 import { TabStrip } from "./TabStrip";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./Transmission";
 import { replayReveal } from "./motion";
 import { PocketbookProvider, usePocketbook } from "./pocketbook-context";
-import { CHAPTERS, resolveHash, type Chapter } from "./presentation";
+import {
+  CHAPTERS,
+  isViewChapter,
+  resolveHash,
+  resolveView,
+  type Chapter,
+} from "./presentation";
 
 /* The URL hash, read as an external store. Using a server snapshot of "" keeps
    the server HTML and the hydration pass identical; the real hash is adopted
@@ -67,21 +74,42 @@ function ShellInner({ sections }: { sections: Section[] }) {
   const { chapter: activeChapter, sectionId } = useMemo(() => resolveHash(hash), [hash]);
   const activeSlug = activeChapter ? activeChapter.slug : null;
 
+  /* A "view chapter" (Form Helper) shows one section at a time behind a
+     sub-navigation, so each generator is its own page. `activeView` is that
+     section: the one the hash named, or the chapter's first when the hash named
+     only the chapter (which is what the Tools tab writes). */
+  const viewChapter = activeChapter && isViewChapter(activeChapter) ? activeChapter : null;
+  const activeView = viewChapter ? resolveView(sectionId, viewChapter) : null;
+
   /* Scroll to a section once its chapter has rendered. The section is not in
      the DOM until then, so this runs after the render that the hash caused. */
   useEffect(() => {
     if (!sectionId) return;
     const el = document.getElementById(sectionId);
     if (!el) return;
+
+    /* A tool page owns the whole viewport: its heading and sub-navigation must
+       stay visible, so it is never scrolled down to its section. Landing on it
+       means starting at its top. */
+    if (viewChapter) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      replayReveal(el);
+      return;
+    }
+
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     replayReveal(el);
-  }, [sectionId, activeSlug]);
+  }, [sectionId, activeSlug, viewChapter]);
 
-  const selectChapter = useCallback((slug: string) => {
+  /* Navigate to a hash target: a chapter slug (`#radio`) or a section id
+     (`#patrol-report`, `#penal-generator`). Both are valid targets for
+     `resolveHash`, and a section id also selects the page inside a view
+     chapter — which is what makes each generator its own addressable page. */
+  const navigate = useCallback((target: string) => {
     // replaceState rather than pushState: tabs are shareable without piling up
     // history entries for every category the deputy glances at.
     try {
-      history.replaceState(null, "", `#${slug}`);
+      history.replaceState(null, "", `#${target}`);
     } catch {
       // A sandboxed document can refuse this; navigation still works.
     }
@@ -137,16 +165,16 @@ function ShellInner({ sections }: { sections: Section[] }) {
           the active tab overlaps the strip's own bottom border. */}
       <header className="app-header sticky top-0 z-40 bg-bg-2 pt-[env(safe-area-inset-top,0px)]">
         <HeaderBand
-          onHome={() => selectChapter("")}
+          onHome={() => navigate("")}
           onSearch={() => setPaletteOpen(true)}
         />
-        <TabStrip chapters={CHAPTERS} activeSlug={activeSlug} onSelect={selectChapter} />
+        <TabStrip chapters={CHAPTERS} activeSlug={activeSlug} onSelect={navigate} />
       </header>
 
       <main id="content" className="relative z-10">
         <div className="mx-auto w-full max-w-[1080px] px-4 pb-[100px] pt-6 min-[760px]:px-6 min-[760px]:pb-24 min-[760px]:pt-10">
           {activeChapter === null ? (
-            <Cover chapters={CHAPTERS} onSelect={selectChapter} />
+            <Cover chapters={CHAPTERS} onSelect={navigate} />
           ) : (
             <div>
               <ChapterHeader chapter={activeChapter} />
@@ -159,11 +187,37 @@ function ShellInner({ sections }: { sections: Section[] }) {
                 </div>
               ) : null}
 
-              <div className="grid gap-14">
-                {activeChapter.sections.map((section) => (
-                  <SectionView key={section.id} section={section} />
-                ))}
-              </div>
+              {/* A view chapter shows one section at a time behind its own
+                  switcher; a stacked chapter renders them all.
+
+                  Both tools stay MOUNTED and only the active one is displayed,
+                  so switching between them keeps whatever the deputy has
+                  already typed into the other — each generator holds its own
+                  form state, and the two never share any. `hidden` (not
+                  conditional rendering) is what keeps them mounted; it also
+                  takes the inactive page out of the layout and the
+                  accessibility tree, so its fixed charge button cannot be
+                  reached while it is off screen. */}
+              {viewChapter && activeView ? (
+                <>
+                  <SubNav
+                    views={viewChapter.sections}
+                    activeId={activeView.id}
+                    onSelect={navigate}
+                  />
+                  {viewChapter.sections.map((section) => (
+                    <div key={section.id} hidden={section.id !== activeView.id}>
+                      <SectionView section={section} />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="grid gap-14">
+                  {activeChapter.sections.map((section) => (
+                    <SectionView key={section.id} section={section} />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -175,7 +229,7 @@ function ShellInner({ sections }: { sections: Section[] }) {
         </div>
       </main>
 
-      <BottomNav activeSlug={activeSlug} onSelect={selectChapter} />
+      <BottomNav activeSlug={activeSlug} onSelect={navigate} />
 
       <CommandPalette
         open={paletteOpen}
