@@ -8,6 +8,7 @@ import type { Section } from "@/lib/types";
 import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "./CommandPalette";
 import { Cover } from "./Cover";
+import { JumpNav } from "./JumpNav";
 import { SectionView } from "./SectionView";
 import { SubNav } from "./SubNav";
 import { TabStrip } from "./TabStrip";
@@ -230,6 +231,20 @@ function ShellInner({ sections }: { sections: Section[] }) {
       </main>
 
       <BottomNav activeSlug={activeSlug} onSelect={navigate} />
+
+      {/* The sub-chapter navigator, for a stacked chapter only: its sections
+          share one scrolling page, so there is something to jump between. A
+          view chapter (Form Helper) shows one section at a time behind
+          `SubNav` and has no such list, and the cover has no chapter at all —
+          both are left without it.
+
+          Keyed by chapter, so switching chapters remounts it: the highlight
+          and the drawer are per-chapter state, and carrying the previous
+          chapter's active id into a list that does not contain it would leave
+          nothing highlighted for a frame. */}
+      {activeChapter && !viewChapter ? (
+        <JumpNav key={activeChapter.slug} sections={activeChapter.sections} />
+      ) : null}
 
       <CommandPalette
         open={paletteOpen}

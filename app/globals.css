@@ -355,7 +355,8 @@
   .command-palette,
   .toast,
   .reading-progress,
-  .back-to-top {
+  .back-to-top,
+  .jump-nav {
     display: none !important;
   }
 
